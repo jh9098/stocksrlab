@@ -1,0 +1,39 @@
+name: 📈 Update Crawled Stock Data
+
+on:
+  schedule:
+    - cron: "0 19 * * *"  # 매일 오전 4시 (한국시간 = 04:00)
+  workflow_dispatch:      # 수동 실행도 가능
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: pip install -r backend/requirements.txt
+
+      - name: Run update script (활성화됨)
+        if: ${{ true }}
+        run: python backend/update_crawled_data.py
+
+      - name: Commit and push updates
+        env:
+          TOKEN: ${{ secrets.PERSONAL_TOKEN }}  # ← Personal Access Token 방식일 때만
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add frontend/src/data/crawled/*.json
+          git commit -m "📈 Auto-update: Crawled stock data" || echo "No changes to commit"
+          git push https://x-access-token:${TOKEN}@github.com/jh9098/stocksrlab.git HEAD:main

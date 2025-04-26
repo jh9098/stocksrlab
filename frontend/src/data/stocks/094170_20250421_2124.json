@@ -1,0 +1,13 @@
+{
+  "code": "A094170",
+  "name": "동운아나텍",
+  "strategy": "지지선 매매 / 20700 아래로 매집후 20700 매도",
+  "supportLines": [
+    20700
+  ],
+  "resistanceLines": [
+    21600
+  ],
+  "youtubeUrl": "",
+  "threadsUrl": ""
+}

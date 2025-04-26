@@ -1,0 +1,14 @@
+{
+  "code": "A005930",
+  "name": "삼성전자",
+  "strategy": "ㅇㅇ",
+  "supportLines": [
+    48000
+  ],
+  "resistanceLines": [
+    60000
+  ],
+  "youtubeUrl": "",
+  "threadsUrl": "",
+  "status": "진행중"
+}

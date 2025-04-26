@@ -1,0 +1,15 @@
+{
+  "code": "A005690",
+  "name": "파미셀",
+  "strategy": "9850 이하 분할매수 후 9850~10600 분할매도",
+  "supportLines": [
+    9850
+  ],
+  "resistanceLines": [
+    10600,
+    12350,
+    14400
+  ],
+  "youtubeUrl": "",
+  "threadsUrl": ""
+}

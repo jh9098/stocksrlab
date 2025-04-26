@@ -1,0 +1,13 @@
+{
+  "code": "A035420",
+  "name": "NAVER",
+  "strategy": "188500 이하 분할매수후 192000 전량매도",
+  "supportLines": [
+    188500
+  ],
+  "resistanceLines": [
+    192000
+  ],
+  "youtubeUrl": "",
+  "threadsUrl": ""
+}

@@ -1,0 +1,13 @@
+{
+  "code": "A000660",
+  "name": "SK하이닉스",
+  "strategy": "184000 밑으로 분할매수 후 홀딩",
+  "supportLines": [
+    184000
+  ],
+  "resistanceLines": [
+    213300
+  ],
+  "youtubeUrl": "",
+  "threadsUrl": ""
+}
