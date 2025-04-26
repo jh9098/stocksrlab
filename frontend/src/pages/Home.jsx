@@ -97,7 +97,7 @@ export default function Home() {
       {/* ✅ 광고 삽입 위치 (1) - 지수 아래 */}
       <div style={{ margin: "2rem 0", textAlign: "center" }}>
         <ins className="kakao_ad_area" style={{ display: "none" }}
-          data-ad-unit="DAN-nRdRmmXBtEZswN3e"  {/* ✅ 실제 생성한 코드 확인 */}
+          data-ad-unit="DAN-nRdRmmXBtEZswN3e"
           data-ad-width="300"
           data-ad-height="250"></ins>
         <script async type="text/javascript" src="//t1.daumcdn.net/kas/static/ba.min.js"></script>
