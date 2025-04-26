@@ -3,6 +3,7 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { enableIndexedDbPersistence } from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: "AIzaSyBy2mFehVzCvUNb618WVw9o2BMaj1LtvLw",
@@ -33,3 +34,13 @@ export const signInWithGoogle = async () => {
     return null;
   }
 };
+
+
+// Firestore 오프라인 캐시 활성화
+enableIndexedDbPersistence(db)
+  .then(() => {
+    console.log('🔥 Firestore 캐시 활성화 완료');
+  })
+  .catch((err) => {
+    console.error('캐시 활성화 실패', err);
+  });

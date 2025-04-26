@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import Select from "react-select";
 import { db, auth } from "../firebaseConfig";
-import { collection, addDoc, getDocs, query, orderBy } from "firebase/firestore";
-import stockMeta from "../../public/data/stock_metadata.json";
+import { collection, addDoc, getDocs, query, where, orderBy } from "firebase/firestore";
 import { useNavigate, useLocation } from "react-router-dom";
+import { ADMIN_UIDS } from "../constants/roles"; // 추가!
 
 export default function RequestBoard() {
   const [stockOptions, setStockOptions] = useState([]);
@@ -15,7 +15,6 @@ export default function RequestBoard() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // ✅ 로그인 여부 확인 (회원 전용 페이지)
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (!user) {
@@ -25,49 +24,24 @@ export default function RequestBoard() {
     return () => unsubscribe();
   }, []);
 
-  // ✅ 종목 옵션 구성
   useEffect(() => {
-    const options = Object.entries(stockMeta).map(([code, data]) => ({
-      value: code,
-      label: `${data.company} (${code})`,
-    }));
-    setStockOptions(options);
-  }, []);
-
-  // ✅ 요청 등록 핸들러
-  const handleSubmit = async () => {
-    const user = auth.currentUser;
-    if (!user) {
-      alert("로그인 후 등록해주세요");
-      return;
-    }
-    if (!selected || !amount || !price) {
-      alert("모든 항목을 입력해주세요");
-      return;
-    }
-
-    const payload = {
-      uid: user.uid,
-      stockCode: selected.value,
-      stockName: selected.label.split(" (")[0],
-      amount: Number(amount),
-      price: Number(price),
-      createdAt: new Date().toISOString(),
+    const fetchStocks = async () => {
+      try {
+        const res = await fetch("/data/stock_metadata.json");
+        const data = await res.json();
+        const options = Object.entries(data).map(([code, item]) => ({
+          value: code,
+          label: `${item.company} (${code})`,
+        }));
+        setStockOptions(options);
+      } catch (error) {
+        console.error("❌ 종목 데이터 로딩 실패:", error);
+      }
     };
 
-    try {
-      await addDoc(collection(db, "requests"), payload);
-      alert("요청이 등록되었습니다!");
-      setSelected(null);
-      setAmount("");
-      setPrice("");
-      fetchRequests();
-    } catch (err) {
-      console.error("등록 실패", err);
-    }
-  };
+    fetchStocks();
+  }, []);
 
-  // ✅ 요청 리스트 및 TOP5 불러오기
   const fetchRequests = async () => {
     const snapshot = await getDocs(query(collection(db, "requests"), orderBy("createdAt", "desc")));
     const data = snapshot.docs.map(doc => doc.data());
@@ -83,7 +57,7 @@ export default function RequestBoard() {
       .slice(0, 5)
       .map(([code, count]) => ({
         code,
-        name: stockMeta[code]?.company || code,
+        name: data.find(d => d.stockCode === code)?.stockName || code,
         count,
       }));
     setTop5(top);
@@ -92,6 +66,61 @@ export default function RequestBoard() {
   useEffect(() => {
     fetchRequests();
   }, []);
+
+  const handleSubmit = async () => {
+    const user = auth.currentUser;
+    if (!user) {
+      alert("로그인 후 이용해주세요");
+      return;
+    }
+    if (!selected || !amount || !price) {
+      alert("모든 항목을 입력해주세요");
+      return;
+    }
+
+    // ✅ 관리자 아니면 하루 1건 제한
+    if (!ADMIN_UIDS.includes(user.uid)) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+
+      const q = query(
+        collection(db, "requests"),
+        where("uid", "==", user.uid),
+        where("createdAt", ">=", today.toISOString()),
+        where("createdAt", "<", tomorrow.toISOString())
+      );
+
+      const snapshot = await getDocs(q);
+      if (!snapshot.empty) {
+        alert("🚫 하루에 1종목만 요청할 수 있습니다.");
+        return;
+      }
+    }
+
+    // Firestore에 등록
+    const payload = {
+      uid: user.uid,
+      stockCode: selected.value,
+      stockName: selected.label.split(" (")[0],
+      amount: Number(amount),
+      price: Number(price),
+      createdAt: new Date().toISOString(),
+    };
+
+    try {
+      await addDoc(collection(db, "requests"), payload);
+      alert("✅ 요청이 등록되었습니다!");
+      setSelected(null);
+      setAmount("");
+      setPrice("");
+      fetchRequests();
+    } catch (err) {
+      console.error("❌ 등록 실패:", err);
+      alert("등록에 실패했습니다.");
+    }
+  };
 
   return (
     <div style={{ maxWidth: 800, margin: "auto", padding: "2rem" }}>
@@ -140,17 +169,6 @@ export default function RequestBoard() {
         {top5.map((item, idx) => (
           <li key={item.code}>
             {idx + 1}. {item.name} ({item.code}) - {item.count}회 요청
-          </li>
-        ))}
-      </ul>
-
-      <hr style={{ margin: "2rem 0" }} />
-
-      <h3>📋 전체 요청 내역</h3>
-      <ul>
-        {requests.map((req, idx) => (
-          <li key={idx}>
-            {req.stockName} ({req.stockCode}) - 비중: {req.amount}% / 평단: {req.price}
           </li>
         ))}
       </ul>

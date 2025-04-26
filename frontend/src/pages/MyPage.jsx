@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
 import { db } from "../firebaseConfig.js";
+import { ADMIN_UIDS } from "../constants/roles"; // 추가
 
 const dataModules = import.meta.glob("../data/stocks/*.json", { eager: true });
 import stockMeta from "../../public/data/stock_metadata.json";
@@ -187,8 +188,9 @@ export default function MyPage() {
             <strong>로그인 방식:</strong> {loginType}
           </li>
           <li>
-            <strong>회원 등급:</strong> 일반회원 (추후 적용 예정)
+            <strong>회원 등급:</strong> {ADMIN_UIDS.includes(user?.uid) ? "관리자" : "일반회원"}
           </li>
+
         </ul>
         <p style={{ fontSize: "0.9rem", color: "#888" }}>
           👉 탈퇴 기능은 추후 제공될 예정입니다.
