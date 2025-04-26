@@ -78,7 +78,7 @@ export default function Home() {
   return (
     <div style={{ padding: "1rem", maxWidth: 1200, margin: "auto" }}>
       
-      {/* KOSPI/KOSDAQ 지수 요약 (가로 정렬) */}
+      {/* 국내 지수 요약 */}
       <section style={{ marginBottom: "1rem" }}>
         <h2>📊 국내 지수 요약</h2>
         <div style={{ display: "flex", justifyContent: "start", gap: "2rem" }}>
@@ -94,7 +94,17 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 실시간 차트 2개 (좌우 분할) */}
+      {/* ✅ 광고 삽입 위치 (1) - 지수 아래 */}
+      <div style={{ margin: "2rem 0", textAlign: "center" }}>
+        <ins className="kakao_ad_area" style={{ display: "none" }}
+          data-ad-unit="DAN-nRdRmmXBtEZswN3e"  {/* ✅ 실제 생성한 코드 확인 */}
+          data-ad-width="300"
+          data-ad-height="250"></ins>
+        <script async type="text/javascript" src="//t1.daumcdn.net/kas/static/ba.min.js"></script>
+      </div>
+
+
+      {/* 실시간 차트 */}
       <section style={{ margin: "2rem 0", display: "flex", gap: "1rem", flexWrap: "wrap" }}>
         <div style={{ flex: 1, minWidth: "400px", height: "300px" }}>
           <h3 style={{ textAlign: "center" }}>🇺🇸 SPY (S&P500)</h3>
@@ -148,14 +158,7 @@ export default function Home() {
       {/* YouTube Shorts */}
       <section style={{ marginTop: "2rem" }}>
         <h2>🎥 YouTube Shorts</h2>
-        <div
-          style={{
-            display: "flex",
-            gap: "1rem",
-            overflowX: "auto",
-            paddingBottom: "1rem"
-          }}
-        >
+        <div style={{ display: "flex", gap: "1rem", overflowX: "auto", paddingBottom: "1rem" }}>
           <iframe
             width="300"
             height="170"
@@ -180,7 +183,7 @@ export default function Home() {
         </div>
       </section>
 
-
+      {/* 하단 안내문구 */}
       <hr style={{ margin: "3rem 0 1.5rem" }} />
       <footer style={{ fontSize: "0.8rem", color: "#888" }}>
         <p>※ 지지저항 Lab에서 제공하는 정보는 오류 및 지연이 있을 수 있으며, 이를 기반으로 한 투자에는 손실이 발생할 수 있습니다.</p>
