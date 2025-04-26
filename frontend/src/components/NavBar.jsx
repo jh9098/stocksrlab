@@ -44,6 +44,8 @@ export default function NavBar() {
     { to: "/link", label: "🧭 관련페이지" },
     { to: "/about", label: "❓ 소개" },
     { to: "/contact", label: "📞 문의" },
+    { to: "/privacy", label: "🔒 개인정보처리방침" }, // ✅ 추가
+    { to: "/terms", label: "📜 이용약관" } // ✅ 추가
   ];
 
   const renderLinks = () => (
@@ -89,7 +91,7 @@ export default function NavBar() {
                   textDecoration: "none",
                   color: "#333"
                 }}
-                onClick={() => setShowDropdown(false)} // 닫기
+                onClick={() => setShowDropdown(false)}
               >
                 {link.label}
               </Link>

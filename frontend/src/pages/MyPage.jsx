@@ -5,6 +5,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
 import { db } from "../firebaseConfig.js";
 import { ADMIN_UIDS } from "../constants/roles"; // 추가
+import { deleteUser } from "firebase/auth";
 
 const dataModules = import.meta.glob("../data/stocks/*.json", { eager: true });
 import stockMeta from "../../public/data/stock_metadata.json";
@@ -17,7 +18,30 @@ export default function MyPage() {
   const navigate = useNavigate();
 
   const kakaoUser = JSON.parse(localStorage.getItem("kakaoUser"));
-
+  const handleDeleteAccount = async () => {
+    if (window.confirm("정말 탈퇴하시겠습니까? 탈퇴하면 복구할 수 없습니다.")) {
+      const currentUser = auth.currentUser;
+  
+      if (currentUser) {
+        try {
+          await deleteUser(currentUser);
+          alert("✅ 탈퇴가 완료되었습니다. 이용해주셔서 감사합니다.");
+          window.location.href = "/";
+        } catch (err) {
+          console.error("❌ 탈퇴 실패:", err);
+          alert("탈퇴에 실패했습니다. 다시 로그인 후 시도해주세요.");
+        }
+      } else if (localStorage.getItem("kakaoUser")) {
+        // 카카오 사용자 처리
+        localStorage.removeItem("kakaoUser");
+        alert("✅ 탈퇴가 완료되었습니다. 이용해주셔서 감사합니다.");
+        window.location.href = "/";
+      } else {
+        alert("로그인 정보가 없습니다.");
+      }
+    }
+  };
+  
   // 로그인 감지 (Google 로그인 또는 Kakao 로그인 유저)
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (u) => {
@@ -25,22 +49,27 @@ export default function MyPage() {
       else setUser(u || kakaoUser); // Firebase 또는 Kakao 사용자 저장
     });
     return () => unsub();
-  }, [kakaoUser]);
+  }, [kakaoUser, navigate]);
 
   // 요청 종목
   useEffect(() => {
-    if (!user?.uid) return;
+    if (!user) return;
 
     const fetchRequests = async () => {
-      const q = query(
-        collection(db, "requests"),
-        where("uid", "==", user.uid),
-        orderBy("createdAt", "desc")
-      );
-      const snapshot = await getDocs(q);
-      const data = snapshot.docs.map((doc) => doc.data());
-      setRequests(data);
+      try {
+        const q = query(
+          collection(db, "requests"),
+          where("uid", "==", user.uid),
+          orderBy("createdAt", "desc")
+        );
+        const snapshot = await getDocs(q);
+        const data = snapshot.docs.map(doc => doc.data());
+        setRequests(data);
+      } catch (e) {
+        console.error("❌ 요청 불러오기 실패", e);
+      }
     };
+
     fetchRequests();
   }, [user]);
 
@@ -58,9 +87,7 @@ export default function MyPage() {
     for (const path in dataModules) {
       try {
         const data = dataModules[path]?.default;
-        const hasUploader = !!data?.uploadedBy;
-        const hasVersion = !!data?.version;
-        if (hasUploader && hasVersion && data.uploadedBy === user.uid) {
+        if (data?.uploadedBy === user.uid && data?.version) {
           uploads.push({ ...data, version: data.version });
         }
       } catch (e) {
@@ -101,12 +128,18 @@ export default function MyPage() {
           <p>요청 내역이 없습니다.</p>
         ) : (
           <ul>
-            {requests.map((r, i) => (
-              <li key={i}>
-                {r.stockName} ({r.stockCode}) - 평단: {r.price} / 비중: {r.amount}% / 등록일:{" "}
-                {r.createdAt.slice(0, 10)}
-              </li>
-            ))}
+            {requests.map((r, i) => {
+              const createdAt =
+                r.createdAt?.toDate?.() instanceof Date
+                  ? r.createdAt.toDate().toISOString().slice(0, 10)
+                  : (r.createdAt || "").slice(0, 10);
+
+              return (
+                <li key={i}>
+                  {r.stockName} ({r.stockCode}) - 평단: {r.price}원 / 비중: {r.amount}% / 등록일: {createdAt || "날짜 없음"}
+                </li>
+              );
+            })}
           </ul>
         )}
       </section>
@@ -190,12 +223,23 @@ export default function MyPage() {
           <li>
             <strong>회원 등급:</strong> {ADMIN_UIDS.includes(user?.uid) ? "관리자" : "일반회원"}
           </li>
-
         </ul>
-        <p style={{ fontSize: "0.9rem", color: "#888" }}>
-          👉 탈퇴 기능은 추후 제공될 예정입니다.
-        </p>
       </section>
+      <button
+        onClick={handleDeleteAccount}
+        style={{
+          marginTop: "1rem",
+          padding: "0.5rem 1.5rem",
+          backgroundColor: "red",
+          color: "white",
+          border: "none",
+          borderRadius: "4px",
+          cursor: "pointer",
+        }}
+      >
+        회원 탈퇴
+      </button>
+
     </div>
   );
 }
