@@ -1,0 +1,14 @@
+{
+  "code": "A005930",
+  "name": "삼성전자",
+  "strategy": "장기스윙매매",
+  "supportLines": [
+    58000
+  ],
+  "resistanceLines": [
+    79600
+  ],
+  "youtubeUrl": "",
+  "threadsUrl": "",
+  "status": "진행중"
+}
