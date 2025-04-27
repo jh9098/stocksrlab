@@ -1,0 +1,14 @@
+{
+  "code": "A257720",
+  "name": "실리콘투",
+  "strategy": "단기스윙매매",
+  "supportLines": [
+    32000
+  ],
+  "resistanceLines": [
+    35000
+  ],
+  "youtubeUrl": "",
+  "threadsUrl": "",
+  "status": "진행중"
+}
