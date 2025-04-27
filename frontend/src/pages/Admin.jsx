@@ -1,4 +1,4 @@
-// ✅ Admin.jsx (완성 리팩토링)
+// ✅ Admin.jsx (최종 리팩토링 버전)
 import { useState, useEffect } from "react";
 import Select from "react-select";
 import { useNavigate } from "react-router-dom";
@@ -156,8 +156,9 @@ export default function Admin() {
   if (isAuthorized === false) return null;
 
   return (
-    <div style={{ padding: "2rem", maxWidth: "900px", margin: "auto" }}>
+    <div style={{ padding: "2rem", maxWidth: "1000px", margin: "auto" }}>
       <h2>📈 종목 등록/수정</h2>
+
       <form onSubmit={handleSubmit} style={{ marginBottom: "2rem" }}>
         <Select options={stockOptions} onChange={handleSelect} placeholder="종목 검색" isClearable style={{ marginBottom: "1rem" }} />
 
@@ -185,12 +186,15 @@ export default function Admin() {
       <h3>🗂️ 등록된 전체 종목</h3>
       <ul>
         {stocks.map(stock => (
-          <li key={stock.version} style={{ marginBottom: "0.75rem" }}>
-            {stock.name || "Unknown"} ({stock.code}) - {formatVersion(stock.version)}
-            <button onClick={() => handleEdit(stock)} style={{ marginLeft: "1rem", color: "blue" }}>수정</button>
-            <button onClick={() => handleDelete(stock.version)} style={{ marginLeft: "0.5rem", color: "red" }}>삭제</button>
+          <li key={stock.version} style={{ marginBottom: "1rem" }}>
+            <div style={{ marginBottom: "0.5rem" }}>
+              <strong>{stock.name || "Unknown"}</strong> ({stock.code}) - {formatVersion(stock.version)}<br />
+              🛡️ 지지선: {stock.supportLines?.join(", ") || "-"} / 🛡️ 저항선: {stock.resistanceLines?.join(", ") || "-"} / 📝 전략: {stock.strategy || "-"}
+            </div>
+            <button onClick={() => handleEdit(stock)} style={{ marginRight: "0.5rem", color: "blue" }}>수정</button>
+            <button onClick={() => handleDelete(stock.version)} style={{ marginRight: "0.5rem", color: "red" }}>삭제</button>
             {stock.status !== "완료" ? (
-              <button onClick={() => handleComplete(stock)} style={{ marginLeft: "0.5rem", color: "green" }}>완료처리</button>
+              <button onClick={() => handleComplete(stock)} style={{ color: "green" }}>완료처리</button>
             ) : (
               <span style={{ marginLeft: "0.5rem", color: "gray" }}>✅ 완료됨</span>
             )}
