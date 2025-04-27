@@ -1,4 +1,4 @@
-// ✅ Admin.jsx (Git Auto Commit 모드 추가 리팩토링)
+// ✅ Admin.jsx (일괄 저장/배포 + 수정 에러 수정 버전)
 import { useState, useEffect } from "react";
 import Select from "react-select";
 import { useNavigate } from "react-router-dom";
@@ -25,8 +25,9 @@ export default function Admin() {
   const [editingVersion, setEditingVersion] = useState(null);
   const [status, setStatus] = useState("");
   const [isAuthorized, setIsAuthorized] = useState(null);
-  const [gitAutoDeploy, setGitAutoDeploy] = useState(true);
+  const [autoDeploy, setAutoDeploy] = useState(true);
   const [pendingActions, setPendingActions] = useState([]);
+  const [pendingNewStocks, setPendingNewStocks] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -45,7 +46,7 @@ export default function Admin() {
   useEffect(() => {
     fetch("/data/stock_metadata.json")
       .then(res => res.json())
-      .then(meta => {
+      .then((meta) => {
         setMetadata(meta);
         const opts = Object.entries(meta).map(([code, info]) => ({
           value: code,
@@ -88,91 +89,92 @@ export default function Admin() {
       resistanceLines: form.resistanceLines.split(",").map(Number),
       status: "진행중",
     };
-    let version = editingVersion;
-    if (!version) {
-      const now = new Date();
-      const yyyy = now.getFullYear();
-      const mm = String(now.getMonth() + 1).padStart(2, "0");
-      const dd = String(now.getDate()).padStart(2, "0");
-      const hh = String(now.getHours()).padStart(2, "0");
-      const min = String(now.getMinutes()).padStart(2, "0");
-      version = `${payload.code.replace("A", "")}_${yyyy}${mm}${dd}_${hh}${min}`;
-    }
+    const now = new Date();
+    const yyyy = now.getFullYear();
+    const mm = String(now.getMonth() + 1).padStart(2, "0");
+    const dd = String(now.getDate()).padStart(2, "0");
+    const hh = String(now.getHours()).padStart(2, "0");
+    const min = String(now.getMinutes()).padStart(2, "0");
+    const version = `${payload.code.replace("A", "")}_${yyyy}${mm}${dd}_${hh}${min}`;
 
-    if (gitAutoDeploy) {
+    if (autoDeploy) {
       setStatus("🚀 업로드 중...");
       try {
         await uploadStockJsonToGithub(payload, version);
-        setStatus("✅ 업로드 성공!");
         window.location.reload();
       } catch (err) {
         console.error(err);
         setStatus("❌ 업로드 실패: " + err.message);
       }
     } else {
-      setPendingActions(prev => [...prev, { type: "upload", payload, version }]);
-      setStatus("📝 수정 대기 중...");
+      setPendingNewStocks(prev => [...prev, { payload, version }]);
+      setStatus("📝 등록 대기 중...");
+      setForm({ code: "", name: "", strategy: "", supportLines: "", resistanceLines: "", youtubeUrl: "", threadsUrl: "" });
     }
-    setForm({ code: "", name: "", strategy: "", supportLines: "", resistanceLines: "", youtubeUrl: "", threadsUrl: "" });
-    setEditingVersion(null);
   };
 
-  const handleDelete = (version) => {
-    if (gitAutoDeploy) {
-      if (window.confirm(`${version} 파일을 삭제할까요?`)) {
-        deleteStockJsonFromGithub(version)
-          .then(() => {
-            setStatus("🗑️ 삭제 완료");
-            window.location.reload();
-          })
-          .catch(err => {
-            console.error(err);
-            setStatus("❌ 삭제 실패: " + err.message);
-          });
+  const handleEdit = (stock) => {
+    setForm({
+      code: stock.code.startsWith("A") ? stock.code : "A" + stock.code,
+      name: stock.name || "",
+      strategy: stock.strategy || "",
+      supportLines: stock.supportLines?.join(",") || "",
+      resistanceLines: stock.resistanceLines?.join(",") || "",
+      youtubeUrl: stock.youtubeUrl || "",
+      threadsUrl: stock.threadsUrl || "",
+    });
+    setEditingVersion(stock.version);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleDelete = async (version) => {
+    if (autoDeploy) {
+      if (!window.confirm(`${version} 파일을 삭제할까요?`)) return;
+      try {
+        await deleteStockJsonFromGithub(version);
+        window.location.reload();
+      } catch (err) {
+        console.error(err);
+        setStatus("❌ 삭제 실패: " + err.message);
       }
     } else {
-      if (window.confirm(`${version} 파일을 삭제할까요?`)) {
-        setPendingActions(prev => [...prev, { type: "delete", version }]);
-        setStatus("📝 삭제 대기 중...");
-      }
+      setPendingActions(prev => [...prev, { type: "delete", version }]);
+      setStatus("📝 삭제 대기 중...");
     }
   };
 
-  const handleComplete = (stock) => {
-    if (gitAutoDeploy) {
-      uploadStockJsonToGithub({ ...stock, status: "완료" }, stock.version)
-        .then(() => {
-          setStatus("✅ 완료 처리 성공!");
-          window.location.reload();
-        })
-        .catch(err => {
-          console.error(err);
-          setStatus("❌ 완료 처리 실패: " + err.message);
-        });
+  const handleComplete = async (stock) => {
+    if (autoDeploy) {
+      try {
+        await uploadStockJsonToGithub({ ...stock, status: "완료" }, stock.version);
+        window.location.reload();
+      } catch (err) {
+        console.error(err);
+        setStatus("❌ 완료 처리 실패: " + err.message);
+      }
     } else {
       setPendingActions(prev => [...prev, { type: "complete", stock }]);
       setStatus("📝 완료 대기 중...");
     }
   };
 
-  const handleBatchCommit = async () => {
-    setStatus("🚀 변경사항 저장 중...");
+  const applyAllChanges = async () => {
     try {
-      for (const action of pendingActions) {
-        if (action.type === "upload") {
-          await uploadStockJsonToGithub(action.payload, action.version);
-        } else if (action.type === "delete") {
-          await deleteStockJsonFromGithub(action.version);
-        } else if (action.type === "complete") {
-          await uploadStockJsonToGithub({ ...action.stock, status: "완료" }, action.stock.version);
+      for (const { type, version, stock } of pendingActions) {
+        if (type === "delete") {
+          await deleteStockJsonFromGithub(version);
+        } else if (type === "complete") {
+          await uploadStockJsonToGithub({ ...stock, status: "완료" }, stock.version);
         }
       }
-      setStatus("✅ 모든 변경사항 저장 완료!");
-      setPendingActions([]);
+      for (const { payload, version } of pendingNewStocks) {
+        await uploadStockJsonToGithub(payload, version);
+      }
+      alert("✅ 모든 변경사항 업로드 완료!");
       window.location.reload();
     } catch (err) {
       console.error(err);
-      setStatus("❌ 일괄 저장 실패: " + err.message);
+      alert("❌ 변경사항 적용 실패: " + err.message);
     }
   };
 
@@ -190,12 +192,8 @@ export default function Admin() {
 
       <div style={{ marginBottom: "1rem" }}>
         <label>
-          <input
-            type="checkbox"
-            checked={gitAutoDeploy}
-            onChange={() => setGitAutoDeploy(prev => !prev)}
-          />{' '}
-          Git 자동 저장/배포 모드
+          <input type="checkbox" checked={autoDeploy} onChange={() => setAutoDeploy(!autoDeploy)} />
+          변경 즉시 Git 저장 및 배포 (OFF시 일괄 저장)
         </label>
       </div>
 
@@ -215,17 +213,19 @@ export default function Admin() {
           </div>
         ))}
 
-        <button type="submit">{editingVersion ? "수정 저장" : "업로드"}</button>
+        <button type="submit">{editingVersion ? "수정 저장" : "신규 업로드"}</button>
         {editingVersion && (
           <button type="button" onClick={() => { setForm({ code: "", name: "", strategy: "", supportLines: "", resistanceLines: "", youtubeUrl: "", threadsUrl: "" }); setEditingVersion(null); }}>취소</button>
         )}
       </form>
 
-      {pendingActions.length > 0 && (
-        <button onClick={handleBatchCommit} style={{ marginBottom: "1rem", backgroundColor: "orange", color: "white", padding: "0.5rem 1rem" }}>변경사항 저장하기</button>
-      )}
-
       {status && <p>{status}</p>}
+
+      {!autoDeploy && (pendingActions.length > 0 || pendingNewStocks.length > 0) && (
+        <button onClick={applyAllChanges} style={{ backgroundColor: "green", color: "white", padding: "0.75rem", marginBottom: "2rem" }}>
+          🚀 변경사항 저장하기
+        </button>
+      )}
 
       <h3>🗂️ 등록된 전체 종목</h3>
       <ul>
