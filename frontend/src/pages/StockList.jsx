@@ -13,7 +13,7 @@ export default function StockList() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        // 종목 데이터
+        // 종목 개별 데이터 로딩
         const context = import.meta.glob("../data/stocks/*.json");
         const entries = await Promise.all(
           Object.entries(context).map(async ([path, loader]) => {
@@ -33,11 +33,10 @@ export default function StockList() {
           })
         );
 
-        // 📦 메타데이터 fetch
+        // 📦 메타데이터 추가 병합
         const res = await fetch("/data/stock_metadata.json");
         const metadata = await res.json();
 
-        // 병합
         const merged = entries.map((item) => ({
           ...item,
           industry: metadata[item.code]?.industry || "기타",
@@ -54,24 +53,25 @@ export default function StockList() {
     loadData();
   }, []);
 
-  const toggleFavorite = (id) => {
-    const updated = favorites.includes(id)
-      ? favorites.filter(fid => fid !== id)
-      : [...favorites, id];
+  const toggleFavorite = (code) => {
+    const updated = favorites.includes(code)
+      ? favorites.filter((fav) => fav !== code)
+      : [...favorites, code];
     setFavorites(updated);
     localStorage.setItem("favorites", JSON.stringify(updated));
   };
 
-  const industries = ["전체", ...Array.from(new Set(stocks.map(s => s.industry)))];
+  const industries = ["전체", ...Array.from(new Set(stocks.map((s) => s.industry)))];
 
-  const filteredStocks = stocks.filter(stock =>
-    (industryFilter === "전체" || stock.industry === industryFilter) &&
-    (stock.name?.toLowerCase().includes(search.toLowerCase()) ||
-     stock.code?.toLowerCase().includes(search.toLowerCase()))
+  const filteredStocks = stocks.filter(
+    (stock) =>
+      (industryFilter === "전체" || stock.industry === industryFilter) &&
+      (stock.name?.toLowerCase().includes(search.toLowerCase()) ||
+       stock.code?.toLowerCase().includes(search.toLowerCase()))
   );
 
-  const inProgress = filteredStocks.filter(s => s.status === "진행중");
-  const completed = filteredStocks.filter(s => s.status === "완료");
+  const inProgress = filteredStocks.filter((s) => s.status === "진행중");
+  const completed = filteredStocks.filter((s) => s.status === "완료");
 
   return (
     <div style={{ maxWidth: 960, margin: "auto", padding: "1rem" }}>
@@ -101,8 +101,13 @@ export default function StockList() {
       <h3>✅ 진행중 종목</h3>
       {inProgress.length === 0 && <p style={{ color: "#888" }}>진행중인 종목이 없습니다.</p>}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.5rem" }}>
-        {inProgress.map(stock => (
-          <StockCard key={stock.id} stock={stock} isFavorite={favorites.includes(stock.id)} onToggle={() => toggleFavorite(stock.id)} />
+        {inProgress.map((stock) => (
+          <StockCard
+            key={stock.id}
+            stock={stock}
+            isFavorite={favorites.includes(stock.code)}
+            onToggle={() => toggleFavorite(stock.code)}
+          />
         ))}
       </div>
 
@@ -111,8 +116,13 @@ export default function StockList() {
       <h3>📁 완료된 종목</h3>
       {completed.length === 0 && <p style={{ color: "#888" }}>완료된 종목이 없습니다.</p>}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.5rem" }}>
-        {completed.map(stock => (
-          <StockCard key={stock.id} stock={stock} isFavorite={favorites.includes(stock.id)} onToggle={() => toggleFavorite(stock.id)} />
+        {completed.map((stock) => (
+          <StockCard
+            key={stock.id}
+            stock={stock}
+            isFavorite={favorites.includes(stock.code)}
+            onToggle={() => toggleFavorite(stock.code)}
+          />
         ))}
       </div>
     </div>
@@ -133,16 +143,20 @@ function StockCard({ stock, isFavorite, onToggle }) {
       </div>
       <div className="stock-card-body">
         <p><strong>업종:</strong> {stock.industry}</p>
-        <p><strong>지지선:</strong> {stock.supportLines?.join(", ")}</p>
-        <p><strong>저항선:</strong> {stock.resistanceLines?.join(", ")}</p>
-        <p><strong>전략:</strong> {stock.strategy}</p>
-        <p style={{ fontSize: "0.85rem", color: "gray" }}>등록일: {formatDate(stock.createdAt)}</p>
+        <p><strong>지지선:</strong> {stock.supportLines?.join(", ") || "없음"}</p>
+        <p><strong>저항선:</strong> {stock.resistanceLines?.join(", ") || "없음"}</p>
+        <p><strong>전략:</strong> {stock.strategy || "등록된 전략 없음"}</p>
+        <p style={{ fontSize: "0.85rem", color: "gray" }}>
+          등록일: {formatDate(stock.createdAt)}
+        </p>
         {stock.status === "완료" && (
           <p style={{ fontSize: "0.85rem", color: "#999" }}>상태: 완료</p>
         )}
       </div>
       <div className="stock-card-footer">
-        <Link to={`/stock/${stock.code}?v=${stock.id}`} className="chart-link">📊 차트 보기</Link>
+        <Link to={`/stock/${stock.code}?v=${stock.id}`} className="chart-link">
+          📊 차트 보기
+        </Link>
       </div>
     </div>
   );

@@ -17,22 +17,24 @@ export default function Home() {
 
   useEffect(() => {
     const grouped = {};
+
     for (const path in dataModules) {
       const filename = path.split("/").pop().replace(".json", "");
       const parts = filename.split("_");
       if (parts.length !== 3) continue;
+
       const [code, date, time] = parts;
       const version = `${code}_${date}_${time}`;
-      const data = dataModules[path].default;
+      const data = dataModules[path]?.default;
 
       if (data.status !== "진행중") continue;
+
       if (!grouped[code]) grouped[code] = [];
-      grouped[code].push({ ...data, version, code });
+      grouped[code].push({ ...data, version, code: code.replace("A", "") });
     }
 
-    const latest = Object.values(grouped).map(entries =>
-      entries.sort((a, b) => b.version.localeCompare(a.version))[0]
-    );
+    const latest = Object.values(grouped)
+      .map(entries => entries.sort((a, b) => b.version.localeCompare(a.version))[0]);
 
     const sorted = latest
       .sort((a, b) => b.version.localeCompare(a.version))
@@ -48,17 +50,17 @@ export default function Home() {
       .catch(() => setMarket(null));
   }, []);
 
-  const toggleFavorite = (id) => {
-    const updated = favorites.includes(id)
-      ? favorites.filter(fid => fid !== id)
-      : [...favorites, id];
+  const toggleFavorite = (code) => {
+    const updated = favorites.includes(code)
+      ? favorites.filter((c) => c !== code)
+      : [...favorites, code];
     setFavorites(updated);
     localStorage.setItem("favorites", JSON.stringify(updated));
   };
 
   const filteredStocks = stocks.filter(stock =>
-    stock.name.toLowerCase().includes(search.toLowerCase()) ||
-    stock.code.toLowerCase().includes(search.toLowerCase())
+    stock.name?.toLowerCase().includes(search.toLowerCase()) ||
+    stock.code?.toLowerCase().includes(search.toLowerCase())
   );
 
   const formatIndex = (label, data) => {
@@ -94,7 +96,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ✅ 광고 삽입 위치 (1) - 지수 아래 */}
+      {/* ✅ 광고 삽입 위치 */}
       <div style={{ margin: "2rem 0", textAlign: "center" }}>
         <ins className="kakao_ad_area" style={{ display: "none" }}
           data-ad-unit="DAN-nRdRmmXBtEZswN3e"
@@ -102,7 +104,6 @@ export default function Home() {
           data-ad-height="250"></ins>
         <script async type="text/javascript" src="//t1.daumcdn.net/kas/static/ba.min.js"></script>
       </div>
-
 
       {/* 실시간 차트 */}
       <section style={{ margin: "2rem 0", display: "flex", gap: "1rem", flexWrap: "wrap" }}>
@@ -127,7 +128,7 @@ export default function Home() {
         />
       </div>
 
-      {/* 최근 분석 종목 */}
+      {/* 최근 분석된 종목 */}
       <section>
         <h2>🧪 최근 분석된 종목</h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.5rem" }}>
@@ -143,12 +144,14 @@ export default function Home() {
                 </button>
               </div>
               <div className="stock-card-body">
-                <p><strong>지지선:</strong> {stock.supportLines?.join(", ")}</p>
-                <p><strong>저항선:</strong> {stock.resistanceLines?.join(", ")}</p>
-                <p><strong>전략:</strong> {stock.strategy}</p>
+                <p><strong>지지선:</strong> {stock.supportLines?.join(", ") || "없음"}</p>
+                <p><strong>저항선:</strong> {stock.resistanceLines?.join(", ") || "없음"}</p>
+                <p><strong>전략:</strong> {stock.strategy || "등록된 전략 없음"}</p>
               </div>
               <div className="stock-card-footer">
-                <Link to={`/stock/A${stock.code}?v=${stock.version}`} className="chart-link">📊 차트 보기</Link>
+                <Link to={`/stock/A${stock.code}?v=${stock.version}`} className="chart-link">
+                  📊 차트 보기
+                </Link>
               </div>
             </div>
           ))}
@@ -159,27 +162,9 @@ export default function Home() {
       <section style={{ marginTop: "2rem" }}>
         <h2>🎥 YouTube Shorts</h2>
         <div style={{ display: "flex", gap: "1rem", overflowX: "auto", paddingBottom: "1rem" }}>
-          <iframe
-            width="300"
-            height="170"
-            src="https://www.youtube.com/embed/02rQU7ngEjY"
-            title="Shorts1"
-            allowFullScreen
-          ></iframe>
-          <iframe
-            width="300"
-            height="170"
-            src="https://www.youtube.com/embed/14NbzG_9V1Y"
-            title="Shorts2"
-            allowFullScreen
-          ></iframe>
-          <iframe
-            width="300"
-            height="170"
-            src="https://www.youtube.com/embed/tf6QuIzxDhk"
-            title="Shorts3"
-            allowFullScreen
-          ></iframe>
+          <iframe width="300" height="170" src="https://www.youtube.com/embed/02rQU7ngEjY" title="Shorts1" allowFullScreen></iframe>
+          <iframe width="300" height="170" src="https://www.youtube.com/embed/14NbzG_9V1Y" title="Shorts2" allowFullScreen></iframe>
+          <iframe width="300" height="170" src="https://www.youtube.com/embed/tf6QuIzxDhk" title="Shorts3" allowFullScreen></iframe>
         </div>
       </section>
 
