@@ -1,0 +1,14 @@
+{
+  "code": "A035420",
+  "name": "NAVER",
+  "strategy": "하단 지지선 부근에서 반등 시 매수 전략",
+  "supportLines": [
+    188500
+  ],
+  "resistanceLines": [
+    192000
+  ],
+  "youtubeUrl": "",
+  "threadsUrl": "",
+  "status": "진행중"
+}
