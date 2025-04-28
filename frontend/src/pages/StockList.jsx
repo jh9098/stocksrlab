@@ -13,7 +13,6 @@ export default function StockList() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        // 종목 개별 데이터 로딩
         const context = import.meta.glob("../data/stocks/*.json");
         const entries = await Promise.all(
           Object.entries(context).map(async ([path, loader]) => {
@@ -29,11 +28,11 @@ export default function StockList() {
               resistanceLines: json.resistanceLines,
               status: json.status || "진행중",
               createdAt: json.createdAt || filename.split("_").slice(1).join("_"),
+              detail: json.detail || "", // ✅ detail 추가
             };
           })
         );
 
-        // 📦 메타데이터 추가 병합
         const res = await fetch("/data/stock_metadata.json");
         const metadata = await res.json();
 
@@ -146,7 +145,9 @@ function StockCard({ stock, isFavorite, onToggle }) {
         <p><strong>지지선:</strong> {stock.supportLines?.join(", ") || "없음"}</p>
         <p><strong>저항선:</strong> {stock.resistanceLines?.join(", ") || "없음"}</p>
         <p><strong>전략:</strong> {stock.strategy || "등록된 전략 없음"}</p>
-        <p><strong>설명:</strong> {stock.detail}</p>
+        {stock.detail && (
+          <p><strong>설명:</strong> {stock.detail}</p>
+        )}
         <p style={{ fontSize: "0.85rem", color: "gray" }}>
           등록일: {formatDate(stock.createdAt)}
         </p>
