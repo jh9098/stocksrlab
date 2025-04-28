@@ -1,22 +1,23 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, lazy, Suspense } from "react";
 import { useLocation, Link } from "react-router-dom";
-import TradingViewWidget from "../components/TradingViewWidget";
 
 const dataModules = import.meta.glob("../data/stocks/*.json", { eager: true });
+const TradingViewWidget = lazy(() => import("../components/TradingViewWidget")); // ✅ Lazy import TradingView
 
 export default function Home() {
   const [stocks, setStocks] = useState([]);
   const [market, setMarket] = useState(null);
-  const [search, setSearch] = useState("");
   const [favorites, setFavorites] = useState(() => {
     const saved = localStorage.getItem("favorites");
     return saved ? JSON.parse(saved) : [];
   });
+  const [loadCharts, setLoadCharts] = useState(false);
+  const [loadShorts, setLoadShorts] = useState(false);
 
   const location = useLocation();
 
   useEffect(() => {
-     if (window.gtag) {
+    if (window.gtag) {
       window.gtag('event', 'page_view', {
         page_path: '/',
         page_title: 'Home Page',
@@ -56,6 +57,39 @@ export default function Home() {
       .catch(() => setMarket(null));
   }, []);
 
+  useEffect(() => {
+    const observerCharts = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setLoadCharts(true);
+          observerCharts.disconnect();
+        }
+      },
+      { threshold: 0.2 }
+    );
+
+    const observerShorts = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setLoadShorts(true);
+          observerShorts.disconnect();
+        }
+      },
+      { threshold: 0.2 }
+    );
+
+    const chartTarget = document.getElementById("chart-section");
+    const shortsTarget = document.getElementById("shorts-section");
+
+    if (chartTarget) observerCharts.observe(chartTarget);
+    if (shortsTarget) observerShorts.observe(shortsTarget);
+
+    return () => {
+      observerCharts.disconnect();
+      observerShorts.disconnect();
+    };
+  }, []);
+
   const toggleFavorite = (code) => {
     const updated = favorites.includes(code)
       ? favorites.filter((c) => c !== code)
@@ -63,11 +97,6 @@ export default function Home() {
     setFavorites(updated);
     localStorage.setItem("favorites", JSON.stringify(updated));
   };
-
-  const filteredStocks = stocks.filter(stock =>
-    stock.name?.toLowerCase().includes(search.toLowerCase()) ||
-    stock.code?.toLowerCase().includes(search.toLowerCase())
-  );
 
   const formatIndex = (label, data) => {
     if (!data) return <div><strong>{label}:</strong> -</div>;
@@ -88,7 +117,6 @@ export default function Home() {
       
       {/* 🧪 최근 분석된 종목 */}
       <section style={{ marginBottom: "2rem" }}>
-        {/* 전체 종목 보기 버튼 추가 */}
         <div style={{ textAlign: "right", marginBottom: "1rem" }}>
           <Link
             to="/list"
@@ -105,8 +133,7 @@ export default function Home() {
             전체 종목 보기 ➔
           </Link>
         </div>
-      
-        {/* 종목 리스트 */}
+
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.5rem" }}>
           {stocks.map(stock => (
             <div key={stock.version} className="stock-card enhanced">
@@ -152,36 +179,36 @@ export default function Home() {
       </section>
 
       {/* 📈 실시간 차트 */}
-      <section style={{ marginBottom: "2rem", display: "flex", gap: "1rem", flexWrap: "wrap" }}>
-        <div style={{ flex: 1, minWidth: "400px", height: "300px" }}>
-          <h3 style={{ textAlign: "center" }}>🇺🇸 SPY (S&P500)</h3>
-          <TradingViewWidget symbol="AMEX:SPY" height={300} />
-        </div>
-        <div style={{ flex: 1, minWidth: "400px", height: "300px" }}>
-          <h3 style={{ textAlign: "center" }}>🇺🇸 NASDAQ (나스닥)</h3>
-          <TradingViewWidget symbol="IG:NASDAQ" height={300} />
-        </div>
+      <section id="chart-section" style={{ marginBottom: "2rem", display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+        {loadCharts && (
+          <>
+            <div style={{ flex: 1, minWidth: "400px", height: "300px" }}>
+              <h3 style={{ textAlign: "center" }}>🇺🇸 SPY (S&P500)</h3>
+              <Suspense fallback={<div>로딩중...</div>}>
+                <TradingViewWidget symbol="AMEX:SPY" height={300} />
+              </Suspense>
+            </div>
+            <div style={{ flex: 1, minWidth: "400px", height: "300px" }}>
+              <h3 style={{ textAlign: "center" }}>🇺🇸 NASDAQ (나스닥)</h3>
+              <Suspense fallback={<div>로딩중...</div>}>
+                <TradingViewWidget symbol="IG:NASDAQ" height={300} />
+              </Suspense>
+            </div>
+          </>
+        )}
       </section>
 
       {/* 🎥 YouTube Shorts */}
-      <section style={{ marginBottom: "2rem", marginTop: "4rem" }}>
+      <section id="shorts-section" style={{ marginBottom: "2rem", marginTop: "4rem" }}>
         <h2 style={{ marginBottom: "1rem" }}>🎥 YouTube Shorts</h2>
-        <div style={{ display: "flex", gap: "1rem", overflowX: "auto", paddingBottom: "1rem" }}>
-          <iframe width="300" height="170" src="https://www.youtube.com/embed/02rQU7ngEjY" title="Shorts1" loading="lazy" allowFullScreen></iframe>
-          <iframe width="300" height="170" src="https://www.youtube.com/embed/14NbzG_9V1Y" title="Shorts2" loading="lazy" allowFullScreen></iframe>
-          <iframe width="300" height="170" src="https://www.youtube.com/embed/tf6QuIzxDhk" title="Shorts3" loading="lazy" allowFullScreen></iframe>
-        </div>
-      </section>
-
-      {/* 📢 광고 영역 (조건부 표시) */}
-      {false && ( // 지금은 false로 해서 안 보이게. 광고 스크립트 삽입 시 true로 변경
-        <section style={{ marginBottom: "2rem", textAlign: "center" }}>
-          <div style={{ width: "100%", height: "250px", backgroundColor: "#f0f0f0", lineHeight: "250px", color: "#888" }}>
-            [광고 자리]
+        {loadShorts && (
+          <div style={{ display: "flex", gap: "1rem", overflowX: "auto", paddingBottom: "1rem" }}>
+            <iframe loading="lazy" width="300" height="170" src="https://www.youtube.com/embed/02rQU7ngEjY" title="Shorts1" allowFullScreen></iframe>
+            <iframe loading="lazy" width="300" height="170" src="https://www.youtube.com/embed/14NbzG_9V1Y" title="Shorts2" allowFullScreen></iframe>
+            <iframe loading="lazy" width="300" height="170" src="https://www.youtube.com/embed/tf6QuIzxDhk" title="Shorts3" allowFullScreen></iframe>
           </div>
-        </section>
-      )}
-
+        )}
+      </section>
 
       {/* 안내 문구 */}
       <footer style={{ fontSize: "0.8rem", color: "#888" }}>
