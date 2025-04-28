@@ -158,8 +158,8 @@ export default function Home() {
       </section>
 
       {/* 🎥 YouTube Shorts */}
-      <section style={{ marginBottom: "2rem" }}>
-        <h2>🎥 YouTube Shorts</h2>
+      <section style={{ marginBottom: "2rem", marginTop: "4rem" }}>
+        <h2 style={{ marginBottom: "1rem" }}>🎥 YouTube Shorts</h2>
         <div style={{ display: "flex", gap: "1rem", overflowX: "auto", paddingBottom: "1rem" }}>
           <iframe width="300" height="170" src="https://www.youtube.com/embed/02rQU7ngEjY" title="Shorts1" allowFullScreen></iframe>
           <iframe width="300" height="170" src="https://www.youtube.com/embed/14NbzG_9V1Y" title="Shorts2" allowFullScreen></iframe>
@@ -167,12 +167,15 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 📢 광고 자리 (Placeholder) */}
-      <section style={{ marginBottom: "2rem", textAlign: "center" }}>
-        <div style={{ width: "100%", height: "250px", backgroundColor: "#f0f0f0", lineHeight: "250px", color: "#888" }}>
-          [광고 자리]
-        </div>
-      </section>
+      {/* 📢 광고 영역 (조건부 표시) */}
+      {false && ( // 지금은 false로 해서 안 보이게. 광고 스크립트 삽입 시 true로 변경
+        <section style={{ marginBottom: "2rem", textAlign: "center" }}>
+          <div style={{ width: "100%", height: "250px", backgroundColor: "#f0f0f0", lineHeight: "250px", color: "#888" }}>
+            [광고 자리]
+          </div>
+        </section>
+      )}
+
 
       {/* 안내 문구 */}
       <footer style={{ fontSize: "0.8rem", color: "#888" }}>
