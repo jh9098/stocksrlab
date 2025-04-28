@@ -146,6 +146,7 @@ function StockCard({ stock, isFavorite, onToggle }) {
         <p><strong>지지선:</strong> {stock.supportLines?.join(", ") || "없음"}</p>
         <p><strong>저항선:</strong> {stock.resistanceLines?.join(", ") || "없음"}</p>
         <p><strong>전략:</strong> {stock.strategy || "등록된 전략 없음"}</p>
+        <p><strong>설명:</strong> {stock.detail}</p>
         <p style={{ fontSize: "0.85rem", color: "gray" }}>
           등록일: {formatDate(stock.createdAt)}
         </p>
