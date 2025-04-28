@@ -1,0 +1,14 @@
+{
+  "code": "A005690",
+  "name": "엑스게이트",
+  "strategy": "보유자 매도추천",
+  "supportLines": [
+    6200
+  ],
+  "resistanceLines": [
+    8450
+  ],
+  "youtubeUrl": "",
+  "threadsUrl": "",
+  "status": "진행중"
+}
