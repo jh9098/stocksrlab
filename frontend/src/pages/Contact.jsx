@@ -11,7 +11,7 @@ export default function Contact() {
       <h2 style={{ marginTop: "2rem" }}>운영자 연락처</h2>
       <ul>
         <li>📧 이메일: <strong>stocksrlab@naver.com</strong></li>
-        <li>💬 오픈채팅방: <a href="https://open.kakao.com/o/xxxxxxx" target="_blank" rel="noreferrer">카카오톡 오픈채팅 문의</a></li>
+        <li>💬 오픈채팅방: <a href="https://open.kakao.com/o/gzQUEIoh" target="_blank" rel="noreferrer">카카오톡 오픈채팅 문의</a></li>
       </ul>
 
       <h2 style={{ marginTop: "2rem" }}>운영 시간</h2>
