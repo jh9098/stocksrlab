@@ -80,57 +80,18 @@ export default function Home() {
   return (
     <div style={{ padding: "1rem", maxWidth: 1200, margin: "auto" }}>
       
-      {/* 국내 지수 요약 */}
-      <section style={{ marginBottom: "1rem" }}>
-        <h2>📊 국내 지수 요약</h2>
-        <div style={{ display: "flex", justifyContent: "start", gap: "2rem" }}>
-          {market && (
-            <>
-              {formatIndex("KOSPI", market["KOSPI"])}
-              {formatIndex("KOSDAQ", market["KOSDAQ"])}
-            </>
-          )}
-        </div>
-        <div style={{ fontSize: "0.85rem", color: "#888", marginTop: "0.5rem" }}>
-          ⏱️ 기준: {market?.updatedAt || "-"}
-        </div>
-      </section>
-
-      {/* ✅ 광고 삽입 위치 */}
-      <div style={{ margin: "2rem 0", textAlign: "center" }}>
-        <ins className="kakao_ad_area" style={{ display: "none" }}
-          data-ad-unit="DAN-nRdRmmXBtEZswN3e"
-          data-ad-width="300"
-          data-ad-height="250"></ins>
-        <script async type="text/javascript" src="//t1.daumcdn.net/kas/static/ba.min.js"></script>
-      </div>
-
-      {/* 실시간 차트 */}
-      <section style={{ margin: "2rem 0", display: "flex", gap: "1rem", flexWrap: "wrap" }}>
-        <div style={{ flex: 1, minWidth: "400px", height: "300px" }}>
-          <h3 style={{ textAlign: "center" }}>🇺🇸 SPY (S&P500)</h3>
-          <TradingViewWidget symbol="AMEX:SPY" height={300} />
-        </div>
-        <div style={{ flex: 1, minWidth: "400px", height: "300px" }}>
-          <h3 style={{ textAlign: "center" }}>🇺🇸 NASDAQ (나스닥)</h3>
-          <TradingViewWidget symbol="IG:NASDAQ" height={300} />
-        </div>
-      </section>
-
-      {/* 종목 검색 */}
-      <div style={{ marginBottom: "1.5rem" }}>
-        <input
-          type="text"
-          placeholder="종목명 또는 코드 검색"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          style={{ width: "100%", padding: "0.5rem", borderRadius: "8px", border: "1px solid #ccc" }}
-        />
-      </div>
-
-      {/* 최근 분석된 종목 */}
-      <section>
+      {/* 🧪 최근 분석된 종목 */}
+      <section style={{ marginBottom: "2rem" }}>
         <h2>🧪 최근 분석된 종목</h2>
+        <div style={{ marginBottom: "1.5rem" }}>
+          <input
+            type="text"
+            placeholder="종목명 또는 코드 검색"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{ width: "100%", padding: "0.5rem", borderRadius: "8px", border: "1px solid #ccc" }}
+          />
+        </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.5rem" }}>
           {filteredStocks.map(stock => (
             <div key={stock.version} className="stock-card enhanced">
@@ -159,8 +120,36 @@ export default function Home() {
         </div>
       </section>
 
-      {/* YouTube Shorts */}
-      <section style={{ marginTop: "2rem" }}>
+      {/* 📊 국내 지수 요약 */}
+      <section style={{ marginBottom: "2rem" }}>
+        <h2>📊 국내 지수 요약</h2>
+        <div style={{ display: "flex", justifyContent: "start", gap: "2rem" }}>
+          {market && (
+            <>
+              {formatIndex("KOSPI", market["KOSPI"])}
+              {formatIndex("KOSDAQ", market["KOSDAQ"])}
+            </>
+          )}
+        </div>
+        <div style={{ fontSize: "0.85rem", color: "#888", marginTop: "0.5rem" }}>
+          ⏱️ 기준: {market?.updatedAt || "-"}
+        </div>
+      </section>
+
+      {/* 📈 실시간 차트 */}
+      <section style={{ marginBottom: "2rem", display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+        <div style={{ flex: 1, minWidth: "400px", height: "300px" }}>
+          <h3 style={{ textAlign: "center" }}>🇺🇸 SPY (S&P500)</h3>
+          <TradingViewWidget symbol="AMEX:SPY" height={300} />
+        </div>
+        <div style={{ flex: 1, minWidth: "400px", height: "300px" }}>
+          <h3 style={{ textAlign: "center" }}>🇺🇸 NASDAQ (나스닥)</h3>
+          <TradingViewWidget symbol="IG:NASDAQ" height={300} />
+        </div>
+      </section>
+
+      {/* 🎥 YouTube Shorts */}
+      <section style={{ marginBottom: "2rem" }}>
         <h2>🎥 YouTube Shorts</h2>
         <div style={{ display: "flex", gap: "1rem", overflowX: "auto", paddingBottom: "1rem" }}>
           <iframe width="300" height="170" src="https://www.youtube.com/embed/02rQU7ngEjY" title="Shorts1" allowFullScreen></iframe>
@@ -169,14 +158,22 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 하단 안내문구 */}
-      <hr style={{ margin: "3rem 0 1.5rem" }} />
+      {/* 📢 광고 자리 (Placeholder) */}
+      <section style={{ marginBottom: "2rem", textAlign: "center" }}>
+        <div style={{ width: "100%", height: "250px", backgroundColor: "#f0f0f0", lineHeight: "250px", color: "#888" }}>
+          [광고 자리]
+        </div>
+      </section>
+
+      {/* 안내 문구 */}
       <footer style={{ fontSize: "0.8rem", color: "#888" }}>
+        <hr style={{ margin: "3rem 0 1.5rem" }} />
         <p>※ 지지저항 Lab에서 제공하는 정보는 오류 및 지연이 있을 수 있으며, 이를 기반으로 한 투자에는 손실이 발생할 수 있습니다.</p>
         <p>※ 본 서비스는 비상업적 참고용이며, 투자 자문이나 매매 유도 목적이 아닙니다.</p>
         <p>※ 문의: stocksrlab@naver.com</p>
         <p style={{ marginTop: "1rem" }}>© 지지저항 Lab. All rights reserved.</p>
       </footer>
+
     </div>
   );
 }
