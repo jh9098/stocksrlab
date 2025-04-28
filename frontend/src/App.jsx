@@ -1,10 +1,11 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { lazy, Suspense } from "react"; 
+import { lazy, Suspense } from "react";
 import NavBar from "./components/NavBar";
+import NotFound from "./pages/NotFound";
 
 import './App.css';
 
-// ✅ 모든 주요 페이지 lazy로 비동기 로딩
+// Lazy import
 const Home = lazy(() => import("./pages/Home"));
 const StockDetail = lazy(() => import("./pages/StockDetail"));
 const Admin = lazy(() => import("./pages/Admin"));
@@ -18,7 +19,6 @@ const MyPage = lazy(() => import("./pages/MyPage"));
 const KakaoRedirect = lazy(() => import("./pages/KakaoRedirect"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Terms = lazy(() => import("./pages/Terms"));
-const NotFound = lazy(() => import("./pages/NotFound"));
 
 export default function App() {
   return (
