@@ -143,6 +143,9 @@ export default function StockDetail() {
 
       <h3 style={{ marginTop: "2rem" }}>📝 매매 전략</h3>
       <p>{stockData.strategy || "등록된 전략이 없습니다."}</p>
+      
+      <h3 style={{ marginTop: "2rem" }}>🧐 종목 설명</h3>
+      <p>{stockData.detail || "등록된 설명이 없습니다."}</p>
 
       <div style={{ marginTop: "1rem" }}>
         {stockData.youtubeUrl && (
