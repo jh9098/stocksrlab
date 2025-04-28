@@ -16,6 +16,12 @@ export default function Home() {
   const location = useLocation();
 
   useEffect(() => {
+     if (window.gtag) {
+      window.gtag('event', 'page_view', {
+        page_path: '/',
+        page_title: 'Home Page',
+      });
+    }
     const grouped = {};
 
     for (const path in dataModules) {
