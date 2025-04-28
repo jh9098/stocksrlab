@@ -82,18 +82,27 @@ export default function Home() {
       
       {/* 🧪 최근 분석된 종목 */}
       <section style={{ marginBottom: "2rem" }}>
-        <h2>🧪 최근 분석된 종목</h2>
-        <div style={{ marginBottom: "1.5rem" }}>
-          <input
-            type="text"
-            placeholder="종목명 또는 코드 검색"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            style={{ width: "100%", padding: "0.5rem", borderRadius: "8px", border: "1px solid #ccc" }}
-          />
+        {/* 전체 종목 보기 버튼 추가 */}
+        <div style={{ textAlign: "right", marginBottom: "1rem" }}>
+          <Link
+            to="/list"
+            style={{
+              padding: "0.5rem 1rem",
+              backgroundColor: "#1976d2",
+              color: "#fff",
+              textDecoration: "none",
+              borderRadius: "6px",
+              fontSize: "0.95rem",
+              display: "inline-block"
+            }}
+          >
+            전체 종목 보기 ➔
+          </Link>
         </div>
+      
+        {/* 종목 리스트 */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.5rem" }}>
-          {filteredStocks.map(stock => (
+          {stocks.map(stock => (
             <div key={stock.version} className="stock-card enhanced">
               <div className="stock-card-header" style={{ display: "flex", justifyContent: "space-between" }}>
                 <h3>{stock.name} <span className="code">({stock.code})</span></h3>
