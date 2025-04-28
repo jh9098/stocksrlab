@@ -167,9 +167,9 @@ export default function Home() {
       <section style={{ marginBottom: "2rem", marginTop: "4rem" }}>
         <h2 style={{ marginBottom: "1rem" }}>🎥 YouTube Shorts</h2>
         <div style={{ display: "flex", gap: "1rem", overflowX: "auto", paddingBottom: "1rem" }}>
-          <iframe width="300" height="170" src="https://www.youtube.com/embed/02rQU7ngEjY" title="Shorts1" allowFullScreen></iframe>
-          <iframe width="300" height="170" src="https://www.youtube.com/embed/14NbzG_9V1Y" title="Shorts2" allowFullScreen></iframe>
-          <iframe width="300" height="170" src="https://www.youtube.com/embed/tf6QuIzxDhk" title="Shorts3" allowFullScreen></iframe>
+          <iframe width="300" height="170" src="https://www.youtube.com/embed/02rQU7ngEjY" title="Shorts1" loading="lazy" allowFullScreen></iframe>
+          <iframe width="300" height="170" src="https://www.youtube.com/embed/14NbzG_9V1Y" title="Shorts2" loading="lazy" allowFullScreen></iframe>
+          <iframe width="300" height="170" src="https://www.youtube.com/embed/tf6QuIzxDhk" title="Shorts3" loading="lazy" allowFullScreen></iframe>
         </div>
       </section>
 
