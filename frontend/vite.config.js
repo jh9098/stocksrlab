@@ -1,19 +1,23 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import legacy from '@vitejs/plugin-legacy';
 import viteCompression from 'vite-plugin-compression';
 import viteImagemin from 'vite-plugin-imagemin';
 
 export default defineConfig({
   plugins: [
     react(),
+    legacy({
+      targets: ['defaults', 'not IE 11'],
+    }),
     viteCompression({
-      algorithm: 'gzip', // gzip 압축
+      algorithm: 'gzip',
       ext: '.gz',
-      threshold: 10240, // 10kb 이상 파일만 압축
+      threshold: 10240,
       deleteOriginFile: false,
     }),
     viteCompression({
-      algorithm: 'brotliCompress', // brotli 압축 추가
+      algorithm: 'brotliCompress',
       ext: '.br',
       threshold: 10240,
       deleteOriginFile: false,
@@ -36,16 +40,20 @@ export default defineConfig({
     assetsInlineLimit: 4096,
     outDir: 'dist',
     sourcemap: false,
+    cssCodeSplit: true,
+    minify: 'esbuild',
     rollupOptions: {
       output: {
         manualChunks(id) {
           if (id.includes('node_modules')) {
+            if (id.includes('react')) return 'react';
+            if (id.includes('firebase')) return 'firebase';
             return 'vendor';
           }
-        }
+        },
       },
       external: ['react-apexcharts'],
     },
-    minify: 'esbuild',
+    target: ['es2015'], // 추가: 모던 브라우저 타겟
   },
 });
