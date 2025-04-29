@@ -21,10 +21,7 @@
     "react-select": "^5.8.0"
   },
   "devDependencies": {
-    "@vitejs/plugin-legacy": "^5.2.0",
-    "@vitejs/plugin-react": "^4.2.1",
-    "vite": "^5.2.10",
-    "vite-plugin-compression": "^0.5.1",
-    "vite-plugin-imagemin": "^0.6.1"
+    "@vitejs/plugin-react": "^4.0.3",
+    "vite": "^4.5.0"
   }
 }
