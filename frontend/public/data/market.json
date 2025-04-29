@@ -1,23 +1,23 @@
 {
   "S&P500": {
-    "price": 5525.21,
-    "change": 40.44,
-    "percent": 0.74
+    "price": 5528.73,
+    "change": 3.52,
+    "percent": 0.06
   },
   "NASDAQ": {
-    "price": 19432.56,
-    "change": 218.16,
-    "percent": 1.14
+    "price": 19427.29,
+    "change": -5.27,
+    "percent": -0.03
   },
   "KOSPI": {
-    "price": 2548.86,
-    "change": 2.56,
-    "percent": 0.1
+    "price": 2563.31,
+    "change": 14.45,
+    "percent": 0.57
   },
   "KOSDAQ": {
-    "price": 719.41,
-    "change": -10.28,
-    "percent": -1.41
+    "price": 724.92,
+    "change": 5.51,
+    "percent": 0.77
   },
-  "updatedAt": "2025-04-28 16:49"
+  "updatedAt": "2025-04-29 10:51"
 }
