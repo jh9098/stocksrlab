@@ -9,6 +9,7 @@ export default defineConfig({
     react(),
     legacy({
       targets: ['defaults', 'not IE 11'],
+      modernPolyfills: true,
     }),
     viteCompression({
       algorithm: 'gzip',
@@ -29,7 +30,7 @@ export default defineConfig({
       pngquant: { quality: [0.65, 0.9], speed: 4 },
       svgo: {
         plugins: [
-          { name: 'removeViewBox' },
+          { name: 'removeViewBox', active: false },
           { name: 'removeEmptyAttrs', active: false },
         ],
       },
@@ -41,19 +42,16 @@ export default defineConfig({
     outDir: 'dist',
     sourcemap: false,
     cssCodeSplit: true,
-    minify: 'esbuild',
     rollupOptions: {
       output: {
         manualChunks(id) {
           if (id.includes('node_modules')) {
-            if (id.includes('react')) return 'react';
-            if (id.includes('firebase')) return 'firebase';
             return 'vendor';
           }
-        },
-      },
-      external: ['react-apexcharts'],
+        }
+      }
     },
-    target: ['es2015'], // 추가: 모던 브라우저 타겟
+    minify: 'esbuild',
+    chunkSizeWarningLimit: 1000,
   },
 });
