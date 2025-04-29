@@ -1,6 +1,6 @@
 [build]
   base = "frontend"
-  command = "NODE_OPTIONS=--max-old-space-size=4096 npm run build"
+  command = "NODE_OPTIONS=--max-old-space-size=4096 npm install --legacy-peer-deps && npm run build"
   publish = "dist"
   node_bundler = "esbuild"
 
