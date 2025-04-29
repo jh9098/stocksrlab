@@ -1,8 +1,9 @@
 import { useEffect, useState, lazy, Suspense } from "react";
 import { useLocation, Link } from "react-router-dom";
+import LazyYoutube from "../components/LazyYoutube"; // ✅ YouTube lazy-load 컴포넌트 import
 
 const dataModules = import.meta.glob("../data/stocks/*.json", { eager: true });
-const TradingViewWidget = lazy(() => import("../components/TradingViewWidget")); // ✅ Lazy import TradingView
+const TradingViewWidget = lazy(() => import("../components/TradingViewWidget")); // ✅ TradingView lazy-load import
 
 export default function Home() {
   const [stocks, setStocks] = useState([]);
@@ -23,8 +24,8 @@ export default function Home() {
         page_title: 'Home Page',
       });
     }
-    const grouped = {};
 
+    const grouped = {};
     for (const path in dataModules) {
       const filename = path.split("/").pop().replace(".json", "");
       const parts = filename.split("_");
@@ -58,25 +59,19 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    const observerCharts = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setLoadCharts(true);
-          observerCharts.disconnect();
-        }
-      },
-      { threshold: 0.2 }
-    );
+    const observerCharts = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setLoadCharts(true);
+        observerCharts.disconnect();
+      }
+    }, { threshold: 0.1 });
 
-    const observerShorts = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setLoadShorts(true);
-          observerShorts.disconnect();
-        }
-      },
-      { threshold: 0.2 }
-    );
+    const observerShorts = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setLoadShorts(true);
+        observerShorts.disconnect();
+      }
+    }, { threshold: 0.1 });
 
     const chartTarget = document.getElementById("chart-section");
     const shortsTarget = document.getElementById("shorts-section");
@@ -184,13 +179,13 @@ export default function Home() {
           <>
             <div style={{ flex: 1, minWidth: "400px", height: "300px" }}>
               <h3 style={{ textAlign: "center" }}>🇺🇸 SPY (S&P500)</h3>
-              <Suspense fallback={<div>로딩중...</div>}>
+              <Suspense fallback={<div>차트 로딩중...</div>}>
                 <TradingViewWidget symbol="AMEX:SPY" height={300} />
               </Suspense>
             </div>
             <div style={{ flex: 1, minWidth: "400px", height: "300px" }}>
               <h3 style={{ textAlign: "center" }}>🇺🇸 NASDAQ (나스닥)</h3>
-              <Suspense fallback={<div>로딩중...</div>}>
+              <Suspense fallback={<div>차트 로딩중...</div>}>
                 <TradingViewWidget symbol="IG:NASDAQ" height={300} />
               </Suspense>
             </div>
@@ -203,9 +198,9 @@ export default function Home() {
         <h2 style={{ marginBottom: "1rem" }}>🎥 YouTube Shorts</h2>
         {loadShorts && (
           <div style={{ display: "flex", gap: "1rem", overflowX: "auto", paddingBottom: "1rem" }}>
-            <iframe loading="lazy" width="300" height="170" src="https://www.youtube.com/embed/02rQU7ngEjY" title="Shorts1" allowFullScreen></iframe>
-            <iframe loading="lazy" width="300" height="170" src="https://www.youtube.com/embed/14NbzG_9V1Y" title="Shorts2" allowFullScreen></iframe>
-            <iframe loading="lazy" width="300" height="170" src="https://www.youtube.com/embed/tf6QuIzxDhk" title="Shorts3" allowFullScreen></iframe>
+            <LazyYoutube videoId="02rQU7ngEjY" />
+            <LazyYoutube videoId="14NbzG_9V1Y" />
+            <LazyYoutube videoId="tf6QuIzxDhk" />
           </div>
         )}
       </section>
