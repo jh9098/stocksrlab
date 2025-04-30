@@ -5,10 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>지지저항 Lab</title>
 
-    <!-- ✅ Google AdSense 인증용 메타태그 추가 -->
-    <meta name="google-adsense-account" content="ca-pub-1861160469675223">
+    <!-- ✅ Google AdSense -->
+    <meta name="google-adsense-account" content="ca-pub-1861160469675223" />
 
-    <!-- ✅ Google Analytics GA4 삽입 시작 -->
+    <!-- ✅ Preconnect for external resources (Lighthouse 권장) -->
+    <link rel="preconnect" href="https://tradingview-widget.com" />
+    <link rel="preconnect" href="https://firebaseapp.com" />
+    <link rel="preconnect" href="https://apis.google.com" />
+
+    <!-- ✅ Google Analytics (GA4) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-BNBT0SJ4B2"></script>
     <script defer>
       window.dataLayer = window.dataLayer || [];
@@ -17,8 +22,7 @@
       gtag('config', 'G-BNBT0SJ4B2');
     </script>
 
-    <!-- ✅ Google Analytics GA4 삽입 끝 -->
-
+    <!-- ✅ Main JS Entry -->
     <script type="module" src="/src/main.jsx"></script>
   </head>
   <body>
