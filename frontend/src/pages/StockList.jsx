@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-const stockModules = import.meta.glob("../data/stocks/*.json");
-
 export default function StockList() {
   const [stocks, setStocks] = useState([]);
   const [search, setSearch] = useState("");
@@ -15,8 +13,9 @@ export default function StockList() {
   useEffect(() => {
     const loadData = async () => {
       try {
+        const context = import.meta.glob("../data/stocks/*.json");
         const entries = await Promise.all(
-          Object.entries(stockModules).map(async ([path, loader]) => {
+          Object.entries(context).map(async ([path, loader]) => {
             const json = await loader();
             const filename = path.split("/").pop().replace(".json", "");
             const code = json.code?.replace("A", "");
@@ -29,7 +28,7 @@ export default function StockList() {
               resistanceLines: json.resistanceLines,
               status: json.status || "진행중",
               createdAt: json.createdAt || filename.split("_").slice(1).join("_"),
-              detail: json.detail || "",
+              detail: json.detail || "", // ✅ detail 추가
             };
           })
         );
