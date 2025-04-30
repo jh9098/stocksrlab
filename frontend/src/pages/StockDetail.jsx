@@ -2,8 +2,8 @@ import { useParams, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import ChartComponent from "../components/Chart";
 
-const stockModules = import.meta.glob("../data/stocks/*.json");
-const crawledModules = import.meta.glob("../data/crawled/*.json");
+const stockModules = import.meta.glob("../data/stocks/*.json", { eager: true });
+const crawledModules = import.meta.glob("../data/crawled/*.json", { eager: true });
 
 export default function StockDetail() {
   const { code } = useParams();
@@ -17,84 +17,92 @@ export default function StockDetail() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let isMounted = true;
-    const loadStockData = async () => {
-      let selectedPath = null;
+    console.log("▶️ useEffect 시작됨");
 
-      if (version) {
-        selectedPath = Object.keys(stockModules).find((path) =>
-          path.includes(`${version}.json`)
-        );
-      }
+    let selectedStock = null;
 
-      if (!selectedPath) {
-        const matches = Object.keys(stockModules)
-          .filter((path) => path.includes(`${shortCode}_`))
-          .sort((a, b) => b.localeCompare(a));
-        if (matches.length > 0) selectedPath = matches[0];
-      }
-
-      if (!selectedPath) {
-        console.log("❌ 분석 stock JSON을 찾을 수 없음");
-        if (isMounted) {
-          setStockData(null);
-          setLoading(false);
-        }
-        return;
-      }
-
-      const module = await stockModules[selectedPath]();
-      if (isMounted) setStockData(module.default);
-
-      const crawledPath = Object.keys(crawledModules).find((path) =>
-        path.includes(`${shortCode}.json`)
+    if (version) {
+      selectedStock = Object.entries(stockModules).find(([path]) =>
+        path.includes(`${version}.json`)
       );
+      console.log("🔍 version 매칭 결과:", selectedStock);
 
-      let prices = [];
-      if (crawledPath) {
-        const crawledModule = await crawledModules[crawledPath]();
-        prices = crawledModule.default?.prices || [];
+    }
+
+    if (!selectedStock) {
+      const matches = Object.entries(stockModules)
+        .filter(([path]) => path.includes(`${shortCode}_`))
+        .sort((a, b) => b[0].localeCompare(a[0]));
+      if (matches.length > 0) selectedStock = matches[0];
+    console.log("🔍 fallback 매칭 결과:", selectedStock);
+    }
+
+    if (!selectedStock) {
+      console.log("❌ selectedStock 못 찾음");
+      setStockData(null);
+      setLoading(false);
+      return;
+    }
+
+    const stock = selectedStock[1].default;
+    setStockData(stock);
+    console.log("📦 분석 stockData 로딩 완료");
+
+    const crawled = Object.entries(crawledModules).find(([path]) =>
+      path.includes(`${shortCode}.json`)
+    );
+    if (!crawled) {
+      console.log("❌ 크롤링 데이터 없음");
+    } else {
+      console.log("📈 크롤링 데이터 로딩 성공:", crawled[0]);
+    }
+    
+    const prices = crawled?.[1]?.default?.prices || [];
+    console.log("✅ prices length:", prices.length);
+
+    // ✅ 차트 데이터 파싱 시 숫자 타입과 유효성 철저히 체크
+    // ✅ chartData 파싱할 때 null/NaN 모두 제거
+    const parsed = prices
+      .filter(d =>
+        d.date &&
+        Number.isFinite(d.open) &&
+        Number.isFinite(d.high) &&
+        Number.isFinite(d.low) &&
+        Number.isFinite(d.price)
+      )
+      .map(d => ({
+        time: new Date(d.date), // ← 여기 핵심!!!
+        open: Number(d.open),
+        high: Number(d.high),
+        low: Number(d.low),
+        close: Number(d.price),
+        volume: Number.isFinite(d.volume) ? d.volume : 0,
+      }))
+      .reverse();
+    parsed.forEach((d, i) => {
+      const keys = ['open', 'high', 'low', 'close'];
+      for (const key of keys) {
+        if (!Number.isFinite(d[key])) {
+          console.error(`❌ 잘못된 데이터 발견 (index ${i}):`, d);
+        }
       }
+    });
 
-      const parsed = prices
-        .filter(
-          (d) =>
-            d.date &&
-            Number.isFinite(d.open) &&
-            Number.isFinite(d.high) &&
-            Number.isFinite(d.low) &&
-            Number.isFinite(d.price)
-        )
-        .map((d) => ({
-          time: new Date(d.date),
-          open: Number(d.open),
-          high: Number(d.high),
-          low: Number(d.low),
-          close: Number(d.price),
-          volume: Number.isFinite(d.volume) ? d.volume : 0,
-        }))
-        .reverse();
+    console.log("✅ 샘플 parsed:", parsed.slice(0, 5).map((d, i) => ({ index: i, ...d })));
 
-      if (isMounted) {
-        setChartData(parsed);
-        setLoading(false);
-      }
-    };
-
-    loadStockData();
-    return () => {
-      isMounted = false;
-    };
+    console.log("✅ 최종 parsed chart data length:", parsed.length);
+    setChartData(parsed);
+    setLoading(false); // ✅ 이게 실행 안되면 계속 "불러오는 중" 상태
   }, [shortCode, version]);
 
   useEffect(() => {
     fetch("/data/stock_metadata.json")
-      .then((res) => res.json())
-      .then((json) => setCompanyInfo(json[shortCode]))
+      .then(res => res.json())
+      .then(json => setCompanyInfo(json[shortCode]))
       .catch(() => setCompanyInfo(null));
   }, [shortCode]);
 
-  const formatVersionDate = (ver) => {
+  const formatVersionDate = ver => {
     if (!ver) return "";
     const parts = ver.split("_");
     if (parts.length !== 3) return "";
@@ -135,7 +143,7 @@ export default function StockDetail() {
 
       <h3 style={{ marginTop: "2rem" }}>📝 매매 전략</h3>
       <p>{stockData.strategy || "등록된 전략이 없습니다."}</p>
-
+      
       <h3 style={{ marginTop: "2rem" }}>🧐 종목 설명</h3>
       <p>{stockData.detail || "등록된 설명이 없습니다."}</p>
 
