@@ -4,6 +4,10 @@ import LazyYoutube from "../components/LazyYoutube"; // ✅ YouTube lazy-load �
 
 const dataModules = import.meta.glob("../data/stocks/*.json", { eager: true });
 const TradingViewWidget = lazy(() => import("../components/TradingViewWidget")); // ✅ TradingView lazy-load import
+import LazyYoutube from "../components/LazyYoutube";
+
+const dataModules = import.meta.glob("../data/stocks/*.json");
+const TradingViewWidget = lazy(() => import("../components/TradingViewWidget"));
 
 export default function Home() {
   const [stocks, setStocks] = useState([]);
@@ -41,14 +45,34 @@ export default function Home() {
       grouped[code].push({ ...data, version, code: code.replace("A", "") });
     }
 
-    const latest = Object.values(grouped)
-      .map(entries => entries.sort((a, b) => b.version.localeCompare(a.version))[0]);
+    const loadData = async () => {
+      const grouped = {};
 
-    const sorted = latest
-      .sort((a, b) => b.version.localeCompare(a.version))
-      .slice(0, 3);
+      for (const path in dataModules) {
+        const filename = path.split("/").pop().replace(".json", "");
+        const parts = filename.split("_");
+        if (parts.length !== 3) continue;
 
-    setStocks(sorted);
+        const [code, date, time] = parts;
+        const version = `${code}_${date}_${time}`;
+        const module = await dataModules[path]();
+        const data = module.default;
+
+        if (data.status !== "진행중") continue;
+
+        if (!grouped[code]) grouped[code] = [];
+        grouped[code].push({ ...data, version, code: code.replace("A", "") });
+      }
+
+      const latest = Object.values(grouped)
+        .map((entries) => entries.sort((a, b) => b.version.localeCompare(a.version))[0])
+        .sort((a, b) => b.version.localeCompare(a.version))
+        .slice(0, 3);
+
+      setStocks(latest);
+    };
+
+    loadData();
   }, []);
 
   useEffect(() => {
