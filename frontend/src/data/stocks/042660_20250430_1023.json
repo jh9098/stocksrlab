@@ -10,5 +10,10 @@
   ],
   "youtubeUrl": "",
   "threadsUrl": "",
-  "status": "진행중"
+  "status": "진행중",
+  "latestPrice": {
+    "price": 76700,
+    "change": 2.29,
+    "date": "2025-04-30 01:50"
+  }
 }
