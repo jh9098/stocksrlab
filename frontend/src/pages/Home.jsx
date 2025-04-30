@@ -113,7 +113,21 @@ export default function Home() {
 
   return (
     <div style={{ padding: "1rem", maxWidth: 1200, margin: "auto" }}>
-      
+      {/* 📊 국내 지수 요약 */}
+      <section style={{ marginBottom: "2rem" }}>
+        <h2>📊 국내 지수 요약</h2>
+        <div style={{ display: "flex", justifyContent: "start", gap: "2rem" }}>
+          {market && (
+            <>
+              {formatIndex("KOSPI", market["KOSPI"])}
+              {formatIndex("KOSDAQ", market["KOSDAQ"])}
+            </>
+          )}
+        </div>
+        <div style={{ fontSize: "0.85rem", color: "#888", marginTop: "0.5rem" }}>
+          ⏱️ 기준: {market?.updatedAt || "-"}
+        </div>
+      </section>      
       {/* 🧪 최근 분석된 종목 */}
       <section style={{ marginBottom: "2rem" }}>
         <div style={{ textAlign: "right", marginBottom: "1rem" }}>
@@ -161,52 +175,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 📊 국내 지수 요약 */}
-      <section style={{ marginBottom: "2rem" }}>
-        <h2>📊 국내 지수 요약</h2>
-        <div style={{ display: "flex", justifyContent: "start", gap: "2rem" }}>
-          {market && (
-            <>
-              {formatIndex("KOSPI", market["KOSPI"])}
-              {formatIndex("KOSDAQ", market["KOSDAQ"])}
-            </>
-          )}
-        </div>
-        <div style={{ fontSize: "0.85rem", color: "#888", marginTop: "0.5rem" }}>
-          ⏱️ 기준: {market?.updatedAt || "-"}
-        </div>
-      </section>
-
-      {/* 📈 실시간 차트 */}
-      <section
-        id="chart-section"
-        style={{
-          marginBottom: "2rem",
-          display: "flex",
-          gap: "1rem",
-          flexWrap: "wrap",
-          minHeight: "320px"  // CLS 방지용 최소 높이 설정
-        }}
-      >
-        {/* 
-        {loadCharts && (
-          <>
-            <div style={{ flex: 1, minWidth: "400px", height: "300px" }}>
-              <h3 style={{ textAlign: "center" }}>🇺🇸 SPY (S&P500)</h3>
-              <Suspense fallback={<div>차트 로딩중...</div>}>
-                <TradingViewWidget symbol="AMEX:SPY" height={300} />
-              </Suspense>
-            </div>
-            <div style={{ flex: 1, minWidth: "400px", height: "300px" }}>
-              <h3 style={{ textAlign: "center" }}>🇺🇸 NASDAQ (나스닥)</h3>
-              <Suspense fallback={<div>차트 로딩중...</div>}>
-                <TradingViewWidget symbol="IG:NASDAQ" height={300} />
-              </Suspense>
-            </div>
-          </>
-        )}
-        */}
-      </section>
 
 
       {/* 🎥 YouTube Shorts */}
