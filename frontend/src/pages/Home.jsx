@@ -3,7 +3,7 @@ import { useLocation, Link } from "react-router-dom";
 import LazyYoutube from "../components/LazyYoutube";
 
 const dataModules = import.meta.glob("../data/stocks/*.json");
-const TradingViewWidget = lazy(() => import("../components/TradingViewWidget"));
+//const TradingViewWidget = lazy(() => import("../components/TradingViewWidget"));
 
 export default function Home() {
   const [stocks, setStocks] = useState([]);
