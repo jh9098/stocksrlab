@@ -178,7 +178,17 @@ export default function Home() {
       </section>
 
       {/* 📈 실시간 차트 */}
-      <section id="chart-section" style={{ marginBottom: "2rem", display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+      <section
+        id="chart-section"
+        style={{
+          marginBottom: "2rem",
+          display: "flex",
+          gap: "1rem",
+          flexWrap: "wrap",
+          minHeight: "320px"  // CLS 방지용 최소 높이 설정
+        }}
+      >
+        {/* 
         {loadCharts && (
           <>
             <div style={{ flex: 1, minWidth: "400px", height: "300px" }}>
@@ -195,7 +205,9 @@ export default function Home() {
             </div>
           </>
         )}
+        */}
       </section>
+
 
       {/* 🎥 YouTube Shorts */}
       <section id="shorts-section" style={{ marginBottom: "2rem", marginTop: "4rem" }}>
