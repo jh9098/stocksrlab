@@ -15,7 +15,6 @@ export default function StockList() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const context = import.meta.glob("../data/stocks/*.json");
         const entries = await Promise.all(
           Object.entries(stockModules).map(async ([path, loader]) => {
             const json = await loader();

@@ -1,9 +1,5 @@
 import { useEffect, useState, lazy, Suspense } from "react";
 import { useLocation, Link } from "react-router-dom";
-import LazyYoutube from "../components/LazyYoutube"; // ✅ YouTube lazy-load 컴포넌트 import
-
-const dataModules = import.meta.glob("../data/stocks/*.json", { eager: true });
-const TradingViewWidget = lazy(() => import("../components/TradingViewWidget")); // ✅ TradingView lazy-load import
 import LazyYoutube from "../components/LazyYoutube";
 
 const dataModules = import.meta.glob("../data/stocks/*.json");
@@ -27,22 +23,6 @@ export default function Home() {
         page_path: '/',
         page_title: 'Home Page',
       });
-    }
-
-    const grouped = {};
-    for (const path in dataModules) {
-      const filename = path.split("/").pop().replace(".json", "");
-      const parts = filename.split("_");
-      if (parts.length !== 3) continue;
-
-      const [code, date, time] = parts;
-      const version = `${code}_${date}_${time}`;
-      const data = dataModules[path]?.default;
-
-      if (data.status !== "진행중") continue;
-
-      if (!grouped[code]) grouped[code] = [];
-      grouped[code].push({ ...data, version, code: code.replace("A", "") });
     }
 
     const loadData = async () => {
@@ -237,7 +217,6 @@ export default function Home() {
         <p>※ 문의: stocksrlab@naver.com</p>
         <p style={{ marginTop: "1rem" }}>© 지지저항 Lab. All rights reserved.</p>
       </footer>
-
     </div>
   );
 }
