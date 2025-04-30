@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import ChartComponent from "../components/Chart";
 
 const stockModules = import.meta.glob("../data/stocks/*.json");
-const crawledModules = import.meta.glob("../data/crawled/*.json");
 
 export default function StockDetail() {
   const { code } = useParams();
@@ -47,15 +46,18 @@ export default function StockDetail() {
       const module = await stockModules[selectedPath]();
       if (isMounted) setStockData(module.default);
 
-      // ✅ 안정적인 방식으로 크롤링 데이터 로드
-      const crawledPath = Object.keys(crawledModules).find((path) =>
-        path.includes(`${shortCode}.json`)
-      );
-
+      // ✅ 크롤링 JSON fetch 방식으로 안정적으로 불러오기
       let prices = [];
-      if (crawledPath) {
-        const crawledModule = await crawledModules[crawledPath]();
-        prices = crawledModule.default?.prices || [];
+      try {
+        const res = await fetch(`/data/crawled/${shortCode}.json`);
+        if (res.ok) {
+          const json = await res.json();
+          prices = json?.prices || [];
+        } else {
+          console.warn("❌ JSON fetch 실패 (404?):", res.status);
+        }
+      } catch (err) {
+        console.warn("❌ JSON fetch 오류:", err);
       }
 
       const parsed = prices
