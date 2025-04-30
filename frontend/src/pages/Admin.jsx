@@ -14,6 +14,7 @@ export default function Admin() {
     code: "",
     name: "",
     strategy: "",
+    detail: "",
     supportLines: "",
     resistanceLines: "",
     youtubeUrl: "",
@@ -109,7 +110,7 @@ export default function Admin() {
     } else {
       setPendingNewStocks(prev => [...prev, { payload, version }]);
       setStatus("📝 등록 대기 중...");
-      setForm({ code: "", name: "", strategy: "", supportLines: "", resistanceLines: "", youtubeUrl: "", threadsUrl: "" });
+      setForm({ code: "", name: "", strategy: "",detail: "", supportLines: "", resistanceLines: "", youtubeUrl: "", threadsUrl: "" });
     }
   };
 
@@ -118,6 +119,7 @@ export default function Admin() {
       code: stock.code.startsWith("A") ? stock.code : "A" + stock.code,
       name: stock.name || "",
       strategy: stock.strategy || "",
+      detail: stock.detail || "",
       supportLines: stock.supportLines?.join(",") || "",
       resistanceLines: stock.resistanceLines?.join(",") || "",
       youtubeUrl: stock.youtubeUrl || "",
@@ -215,7 +217,7 @@ export default function Admin() {
 
         <button type="submit">{editingVersion ? "수정 저장" : "신규 업로드"}</button>
         {editingVersion && (
-          <button type="button" onClick={() => { setForm({ code: "", name: "", strategy: "", supportLines: "", resistanceLines: "", youtubeUrl: "", threadsUrl: "" }); setEditingVersion(null); }}>취소</button>
+          <button type="button" onClick={() => { setForm({ code: "", name: "", strategy: "",detail: "", supportLines: "", resistanceLines: "", youtubeUrl: "", threadsUrl: "" }); setEditingVersion(null); }}>취소</button>
         )}
       </form>
 
@@ -233,7 +235,7 @@ export default function Admin() {
           <li key={stock.version} style={{ marginBottom: "1rem" }}>
             <div style={{ marginBottom: "0.5rem" }}>
               <strong>{stock.name || "Unknown"}</strong> ({stock.code}) - {formatVersion(stock.version)}<br />
-              🛡️ 지지선: {stock.supportLines?.join(", ") || "-"} / 🛡️ 저항선: {stock.resistanceLines?.join(", ") || "-"} / 📝 전략: {stock.strategy || "-"}
+              🛡️ 지지선: {stock.supportLines?.join(", ") || "-"} / 🛡️ 저항선: {stock.resistanceLines?.join(", ") || "-"} / 📝 전략: {stock.strategy || "-"}  / 📝 설명: {stock.detail || "-"}
             </div>
             <button onClick={() => handleEdit(stock)} style={{ marginRight: "0.5rem", color: "blue" }}>수정</button>
             <button onClick={() => handleDelete(stock.version)} style={{ marginRight: "0.5rem", color: "red" }}>삭제</button>
