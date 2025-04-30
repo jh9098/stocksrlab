@@ -2,8 +2,7 @@ import { useParams, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import ChartComponent from "../components/Chart";
 
-const stockModules = import.meta.glob("../data/stocks/*.json"); // lazy 로딩
-const crawledModules = import.meta.glob("../data/crawled/*.json");
+const stockModules = import.meta.glob("../data/stocks/*.json"); // ✅ 이건 유지
 
 export default function StockDetail() {
   const { code } = useParams();
@@ -18,6 +17,7 @@ export default function StockDetail() {
 
   useEffect(() => {
     let isMounted = true;
+
     const loadStockData = async () => {
       let selectedPath = null;
 
@@ -46,39 +46,42 @@ export default function StockDetail() {
       const module = await stockModules[selectedPath]();
       if (isMounted) setStockData(module.default);
 
-      // 🔄 크롤링 데이터도 동적으로 로딩
-      const crawledPath = Object.keys(crawledModules).find((path) =>
-        path.includes(`${shortCode}.json`)
-      );
+      // ✅ crawled/*.json 하나만 동적 import로 불러오기 (성능 개선 핵심)
+      try {
+        const crawledModule = await import(
+          /* @vite-ignore */ `../data/crawled/${shortCode}.json`
+        );
+        const prices = crawledModule.default?.prices || [];
 
-      let prices = [];
-      if (crawledPath) {
-        const crawledModule = await crawledModules[crawledPath]();
-        prices = crawledModule.default?.prices || [];
-      }
+        const parsed = prices
+          .filter(
+            (d) =>
+              d.date &&
+              Number.isFinite(d.open) &&
+              Number.isFinite(d.high) &&
+              Number.isFinite(d.low) &&
+              Number.isFinite(d.price)
+          )
+          .map((d) => ({
+            time: new Date(d.date),
+            open: Number(d.open),
+            high: Number(d.high),
+            low: Number(d.low),
+            close: Number(d.price),
+            volume: Number.isFinite(d.volume) ? d.volume : 0,
+          }))
+          .reverse();
 
-      const parsed = prices
-        .filter(
-          (d) =>
-            d.date &&
-            Number.isFinite(d.open) &&
-            Number.isFinite(d.high) &&
-            Number.isFinite(d.low) &&
-            Number.isFinite(d.price)
-        )
-        .map((d) => ({
-          time: new Date(d.date),
-          open: Number(d.open),
-          high: Number(d.high),
-          low: Number(d.low),
-          close: Number(d.price),
-          volume: Number.isFinite(d.volume) ? d.volume : 0,
-        }))
-        .reverse();
-
-      if (isMounted) {
-        setChartData(parsed);
-        setLoading(false);
+        if (isMounted) {
+          setChartData(parsed);
+          setLoading(false);
+        }
+      } catch (err) {
+        console.warn("❌ 크롤링 차트 JSON 불러오기 실패:", err);
+        if (isMounted) {
+          setChartData([]);
+          setLoading(false);
+        }
       }
     };
 
