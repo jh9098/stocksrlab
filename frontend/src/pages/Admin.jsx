@@ -86,6 +86,7 @@ export default function Admin() {
     e.preventDefault();
     const payload = {
       ...form,
+      detail: form.detail, // 명시적으로 추가
       supportLines: form.supportLines.split(",").map(Number),
       resistanceLines: form.resistanceLines.split(",").map(Number),
       status: "진행중",
