@@ -1,9 +1,8 @@
-import { useEffect, useState, lazy, Suspense } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, Link } from "react-router-dom";
 import LazyYoutube from "../components/LazyYoutube";
 
 const dataModules = import.meta.glob("../data/stocks/*.json");
-//const TradingViewWidget = lazy(() => import("../components/TradingViewWidget"));
 
 export default function Home() {
   const [stocks, setStocks] = useState([]);
@@ -12,21 +11,19 @@ export default function Home() {
     const saved = localStorage.getItem("favorites");
     return saved ? JSON.parse(saved) : [];
   });
-  const [loadCharts, setLoadCharts] = useState(false);
   const [loadShorts, setLoadShorts] = useState(false);
-
   const location = useLocation();
 
   useEffect(() => {
     if (window.gtag) {
-      window.gtag('event', 'page_view', {
-        page_path: '/',
-        page_title: 'Home Page',
+      window.gtag("event", "page_view", {
+        page_path: "/",
+        page_title: "Home Page",
       });
     }
 
     const loadData = async () => {
-      const grouped = {};
+      const entries = [];
 
       for (const path in dataModules) {
         const filename = path.split("/").pop().replace(".json", "");
@@ -40,16 +37,11 @@ export default function Home() {
 
         if (data.status !== "진행중") continue;
 
-        if (!grouped[code]) grouped[code] = [];
-        grouped[code].push({ ...data, version, code: code.replace("A", "") });
+        entries.push({ ...data, version, code: code.replace("A", ""), sortKey: `${date}${time}` });
       }
 
-      const latest = Object.values(grouped)
-        .map((entries) => entries.sort((a, b) => b.version.localeCompare(a.version))[0])
-        .sort((a, b) => b.version.localeCompare(a.version))
-        .slice(0, 3);
-
-      setStocks(latest);
+      entries.sort((a, b) => b.sortKey.localeCompare(a.sortKey));
+      setStocks(entries);
     };
 
     loadData();
@@ -57,36 +49,22 @@ export default function Home() {
 
   useEffect(() => {
     fetch("/data/market.json")
-      .then(res => res.json())
+      .then((res) => res.json())
       .then(setMarket)
       .catch(() => setMarket(null));
   }, []);
 
   useEffect(() => {
-    const observerCharts = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        setLoadCharts(true);
-        observerCharts.disconnect();
-      }
-    }, { threshold: 0.1 });
-
-    const observerShorts = new IntersectionObserver(([entry]) => {
+    const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
         setLoadShorts(true);
-        observerShorts.disconnect();
+        observer.disconnect();
       }
     }, { threshold: 0.1 });
 
-    const chartTarget = document.getElementById("chart-section");
     const shortsTarget = document.getElementById("shorts-section");
-
-    if (chartTarget) observerCharts.observe(chartTarget);
-    if (shortsTarget) observerShorts.observe(shortsTarget);
-
-    return () => {
-      observerCharts.disconnect();
-      observerShorts.disconnect();
-    };
+    if (shortsTarget) observer.observe(shortsTarget);
+    return () => observer.disconnect();
   }, []);
 
   const toggleFavorite = (code) => {
@@ -127,8 +105,9 @@ export default function Home() {
         <div style={{ fontSize: "0.85rem", color: "#888", marginTop: "0.5rem" }}>
           ⏱️ 기준: {market?.updatedAt || "-"}
         </div>
-      </section>      
-      {/* 🧪 최근 분석된 종목 */}
+      </section>
+
+      {/* 🧪 등록된 종목 전체 */}
       <section style={{ marginBottom: "2rem" }}>
         <div style={{ textAlign: "right", marginBottom: "1rem" }}>
           <Link
@@ -140,7 +119,7 @@ export default function Home() {
               textDecoration: "none",
               borderRadius: "6px",
               fontSize: "0.95rem",
-              display: "inline-block"
+              display: "inline-block",
             }}
           >
             전체 종목 보기 ➔
@@ -148,7 +127,7 @@ export default function Home() {
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.5rem" }}>
-          {stocks.map(stock => (
+          {stocks.map((stock) => (
             <div key={stock.version} className="stock-card enhanced">
               <div className="stock-card-header" style={{ display: "flex", justifyContent: "space-between" }}>
                 <h3>{stock.name} <span className="code">({stock.code})</span></h3>
@@ -174,8 +153,6 @@ export default function Home() {
           ))}
         </div>
       </section>
-
-
 
       {/* 🎥 YouTube Shorts */}
       <section id="shorts-section" style={{ marginBottom: "2rem", marginTop: "4rem" }}>
