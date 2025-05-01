@@ -163,7 +163,7 @@ export default function Home() {
                 <p><strong>지지선:</strong> {stock.supportLines?.join(", ") || "없음"}</p>
                 <p><strong>저항선:</strong> {stock.resistanceLines?.join(", ") || "없음"}</p>
                 <p><strong>전략:</strong> {stock.strategy || "등록된 전략 없음"}</p>
-                <p><strong>설명:</strong> {stock.detail}</p>
+                <p><strong>설명:</strong> {stock.detail || "등록된 설명 없음"}</p>
               </div>
               <div className="stock-card-footer">
                 <Link to={`/stock/A${stock.code}?v=${stock.version}`} className="chart-link">
