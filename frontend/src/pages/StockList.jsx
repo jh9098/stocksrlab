@@ -24,11 +24,11 @@ export default function StockList() {
               code,
               name: json.name,
               strategy: json.strategy,
+              detail: json.detail,
               supportLines: json.supportLines,
               resistanceLines: json.resistanceLines,
               status: json.status || "진행중",
               createdAt: json.createdAt || filename.split("_").slice(1).join("_"),
-              detail: json.detail || "", // ✅ detail 추가
             };
           })
         );
@@ -145,9 +145,7 @@ function StockCard({ stock, isFavorite, onToggle }) {
         <p><strong>지지선:</strong> {stock.supportLines?.join(", ") || "없음"}</p>
         <p><strong>저항선:</strong> {stock.resistanceLines?.join(", ") || "없음"}</p>
         <p><strong>전략:</strong> {stock.strategy || "등록된 전략 없음"}</p>
-        {stock.detail && (
-          <p><strong>설명:</strong> {stock.detail}</p>
-        )}
+        <p><strong>설명:</strong> {stock.detail || "등록된 설명 없음"}</p>
         <p style={{ fontSize: "0.85rem", color: "gray" }}>
           등록일: {formatDate(stock.createdAt)}
         </p>
