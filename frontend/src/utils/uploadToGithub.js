@@ -1,7 +1,7 @@
 // uploadToGithub.js: 변경 감지 + 업로드 최적화 버전
 
 export async function uploadStockJsonToGithub(
-  { code, name, strategy, supportLines, resistanceLines, youtubeUrl, threadsUrl, status },
+  { code, name, strategy,detail, supportLines, resistanceLines, youtubeUrl, threadsUrl, status },
   version
 ) {
   const token = import.meta.env.VITE_GITHUB_TOKEN;
@@ -16,6 +16,7 @@ export async function uploadStockJsonToGithub(
     code,
     name,
     strategy,
+    detail,
     supportLines,
     resistanceLines,
     youtubeUrl,
