@@ -156,3 +156,23 @@ footer {
     text-align: center;
   }
 }
+@media (max-width: 480px) {
+  .stock-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 두 종목씩 보여줌 */
+    gap: 1rem;
+  }
+
+  .stock-card.enhanced {
+    padding: 1rem;
+    font-size: 0.9rem;
+  }
+
+  .stock-card-header h3 {
+    font-size: 1rem;
+  }
+
+  .stock-card-body p {
+    font-size: 0.85rem;
+  }
+}
