@@ -36,13 +36,14 @@ export default function ChartComponent({
       width: chartContainerRef.current.clientWidth,
       height: 400,
       layout: {
-        textColor: "#d1d4dc",
-        background: { type: "Solid", color: "#000000" },
+        textColor: "#000000",
+        background: { type: "Solid", color: "#ffffff" }, // 흰색 배경
       },
       grid: {
-        vertLines: { color: "#2B2B43" },
-        horzLines: { color: "#2B2B43" },
+        vertLines: { color: "#e0e0e0" },
+        horzLines: { color: "#e0e0e0" },
       },
+
       crosshair: { mode: CrosshairMode.Normal },
       priceScale: { borderVisible: true },
       timeScale: {
