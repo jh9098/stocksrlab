@@ -40,4 +40,7 @@ function TradingViewWidget({ symbol = "NASDAQ:NDX", height = 300 }) {
   );
 }
 
-export default memo(TradingViewWidget);
+export default function TradingViewWidget() {
+  return null;
+}
+
