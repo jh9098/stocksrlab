@@ -11,7 +11,15 @@ export default function Home() {
   });
   const [loadShorts, setLoadShorts] = useState(false);
   const location = useLocation();
+  // ✅ 1. 광고 스크립트 삽입 useEffect
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.async = true;
+    script.src = "//t1.daumcdn.net/kas/static/ba.min.js";
+    document.body.appendChild(script);
+  }, []);
 
+  // ✅ 2. 구글 애널리틱스
   useEffect(() => {
     if (window.gtag) {
       window.gtag("event", "page_view", {
@@ -21,6 +29,7 @@ export default function Home() {
     }
   }, []);
   
+  // ✅ 3. 종목 불러오기  
   useEffect(() => {
     const loadData = async () => {
       const modules = import.meta.glob("../data/stocks/*.json");
@@ -164,11 +173,23 @@ export default function Home() {
       {/* 안내 문구 */}
       <footer style={{ fontSize: "0.8rem", color: "#888" }}>
         <hr style={{ margin: "3rem 0 1.5rem" }} />
+        
+        {/* ✅ 카카오 광고 삽입 영역 */}
+        <div style={{ textAlign: "center", marginBottom: "2rem" }}>
+          <ins className="kakao_ad_area"
+            style={{ display: "none" }}
+            data-ad-unit="DAN-nRdRmmXBtZEswN3e"
+            data-ad-width="300"
+            data-ad-height="250"
+          ></ins>
+        </div>
+      
         <p>※ 지지저항 Lab에서 제공하는 정보는 오류 및 지연이 있을 수 있으며, 이를 기반으로 한 투자에는 손실이 발생할 수 있습니다.</p>
         <p>※ 본 서비스는 비상업적 참고용이며, 투자 자문이나 매매 유도 목적이 아닙니다.</p>
         <p>※ 문의: stocksrlab@naver.com</p>
         <p style={{ marginTop: "1rem" }}>© 지지저항 Lab. All rights reserved.</p>
       </footer>
+
     </div>
   );
 }
