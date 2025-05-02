@@ -95,9 +95,9 @@ export default function Home() {
 
   return (
     <div style={{ padding: "1rem", maxWidth: 1200, margin: "auto" }}>
-      {/* 통기 국내 지수 요약 */}
+      {/* 국내 지수 요약 */}
       <section style={{ marginBottom: "2rem" }}>
-        <h2>통기 국내 지수 요약</h2>
+        <h2> 국내 지수 요약</h2>
         <div style={{ display: "flex", justifyContent: "start", gap: "2rem" }}>
           {market && (
             <>
@@ -150,7 +150,7 @@ export default function Home() {
               </div>
               <div className="stock-card-footer">
                 <Link to={`/stock/A${stock.code}?v=${stock.version}`} className="chart-link">
-                  통기 차트 보기
+                  차트 보기
                 </Link>
               </div>
             </div>
