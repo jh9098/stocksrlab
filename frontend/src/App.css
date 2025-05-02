@@ -119,3 +119,40 @@ footer {
   background-color: #1a1a1a;
   color: #aaa;
 }
+/* ✅ 모바일 세로 화면 대응 (최대 480px) */
+@media (max-width: 480px) {
+  .stock-card.enhanced {
+    padding: 1rem 1.2rem;
+    font-size: 0.95rem;
+    border-radius: 10px;
+  }
+
+  .stock-card-header h3 {
+    font-size: 1.05rem;
+  }
+
+  .stock-card-body p {
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+
+  .stock-card-footer {
+    text-align: center;
+    margin-top: 0.8rem;
+  }
+
+  .chart-link {
+    font-size: 0.9rem;
+  }
+
+  .index-summary {
+    flex-direction: column;
+    gap: 0.8rem;
+    align-items: center;
+  }
+
+  nav {
+    flex-direction: column;
+    text-align: center;
+  }
+}
