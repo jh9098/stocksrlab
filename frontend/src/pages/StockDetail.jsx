@@ -50,8 +50,10 @@ export default function StockDetail() {
     fetch("/data/crawled/index.json")
       .then(res => res.json())
       .then(json => {
+        console.log("✅ json keys:", Object.keys(json));           // 🔍 확인
+        console.log("✅ shortCode:", shortCode);                   // 🔍 확인
         const prices = json?.[shortCode] || [];
-        console.log("✅ prices length:", prices.length);
+        console.log("✅ prices sample:", prices.slice(0, 3));      // 🔍 샘플 출력
 
         const parsed = prices
           .filter(d =>
