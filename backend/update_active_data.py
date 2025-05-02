@@ -7,39 +7,50 @@ from utils.investing_crawler import fetch_index_full
 import shutil
 from zoneinfo import ZoneInfo
 
-STOCKS_DIR = Path("frontend/src/data/stocks")
+STOCKS_INDEX_PATH = Path("frontend/src/data/stocks/index.json")
 MARKET_PATH = Path("frontend/src/data/market.json")
+PUBLIC_MARKET_PATH = Path("frontend/public/data/market.json")
 
-def get_progressing_stocks():
-    progressing = []
-    for file in STOCKS_DIR.glob("*.json"):
-        try:
-            with open(file, encoding="utf-8") as f:
-                data = json.load(f)
-            if data.get("status") == "진행중":
-                progressing.append((file, data))
-        except Exception as e:
-            print(f"❌ {file.name} 읽기 실패: {e}")
-    return progressing
+def load_index_data():
+    if not STOCKS_INDEX_PATH.exists():
+        print("❌ index.json 없음")
+        return {}
+    with open(STOCKS_INDEX_PATH, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+def save_index_data(data):
+    with open(STOCKS_INDEX_PATH, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
 
 def update_stock_prices():
     print("📈 진행중 종목 주가 업데이트 시작...")
-    for file, data in get_progressing_stocks():
+    data = load_index_data()
+    count = 0
+
+    for key, value in data.items():
+        if value.get("status") != "진행중":
+            continue
+
         try:
-            price_info = fetch_stock_price(data["code"])
+            price_info = fetch_stock_price(value["code"])
             if not price_info:
-                print(f"⚠️ {data['code']} 시세 실패 (skip)")
+                print(f"⚠️ {value['code']} 시세 실패 (skip)")
                 continue
-            data["latestPrice"] = {
+
+            value["latestPrice"] = {
                 "price": price_info["price"],
                 "change": price_info["change"],
                 "date": datetime.now().strftime("%Y-%m-%d %H:%M")
             }
-            with open(file, "w", encoding="utf-8") as f:
-                json.dump(data, f, ensure_ascii=False, indent=2)
-            print(f"✅ {data['code']} ({file.name}) 업데이트 완료")
+            data[key] = value
+            print(f"✅ {value['code']} ({key}) 업데이트 완료")
+            count += 1
+
         except Exception as e:
-            print(f"❌ {file.name} 오류: {e}")
+            print(f"❌ {key} 오류: {e}")
+
+    save_index_data(data)
+    print(f"\n📦 총 {count}개 종목 최신가 반영 완료")
 
 def update_market_json():
     print("🌍 Investing.com에서 지수 크롤링 중...")
@@ -66,16 +77,13 @@ def update_market_json():
     except Exception as e:
         print(f"❌ market.json 저장 실패: {e}")
         
-    # market.json 저장 후 추가
+    # market.json → public/data로 복사
     try:
-        os.makedirs("frontend/public/data", exist_ok=True)  # ✅ Netlify에 포함될 폴더
-        shutil.copy("frontend/src/data/market.json", "frontend/public/data/market.json")  # ✅ 진짜 복사 대상
-        print("📂 frontend/public/data/market.json 으로 복사 완료")
+        os.makedirs(PUBLIC_MARKET_PATH.parent, exist_ok=True)
+        shutil.copy(MARKET_PATH, PUBLIC_MARKET_PATH)
+        print("📂 public/data/market.json 복사 완료")
     except Exception as e:
-        print(f"❌ frontend/public/data 복사 실패: {e}")
-
-
-
+        print(f"❌ market.json 복사 실패: {e}")
 
 if __name__ == "__main__":
     update_stock_prices()
