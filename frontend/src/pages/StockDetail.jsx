@@ -14,6 +14,7 @@ export default function StockDetail() {
   const [chartData, setChartData] = useState([]);
   const [companyInfo, setCompanyInfo] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     console.log("▶️ useEffect 시작됨");
@@ -37,7 +38,7 @@ export default function StockDetail() {
 
     if (!selectedStock) {
       console.log("❌ selectedStock 못 찾음");
-      setStockData(null);
+      setError(true);
       setLoading(false);
       return;
     }
@@ -46,15 +47,11 @@ export default function StockDetail() {
     setStockData(stock);
     console.log("📦 분석 stockData 로딩 완료");
 
-    // ✅ index.json 하나만 fetch
+    // ✅ index.json fetch
     fetch("/data/crawled/index.json")
       .then(res => res.json())
       .then(json => {
-        console.log("✅ json keys:", Object.keys(json));           // 🔍 확인
-        console.log("✅ shortCode:", shortCode);                   // 🔍 확인
         const prices = json?.[shortCode] || [];
-        console.log("✅ prices sample:", prices.slice(0, 3));      // 🔍 샘플 출력
-
         const parsed = prices
           .filter(d =>
             d.date &&
@@ -73,22 +70,12 @@ export default function StockDetail() {
           }))
           .reverse();
 
-        parsed.forEach((d, i) => {
-          const keys = ['open', 'high', 'low', 'close'];
-          for (const key of keys) {
-            if (!Number.isFinite(d[key])) {
-              console.error(`❌ 잘못된 데이터 발견 (index ${i}):`, d);
-            }
-          }
-        });
-
-        console.log("✅ 최종 parsed chart data length:", parsed.length);
         setChartData(parsed);
         setLoading(false);
       })
       .catch(err => {
         console.error("❌ 크롤링 데이터 로딩 실패:", err);
-        setChartData([]);
+        setError(true);
         setLoading(false);
       });
   }, [shortCode, version]);
@@ -108,25 +95,31 @@ export default function StockDetail() {
     return `${date.slice(0, 4)}-${date.slice(4, 6)}-${date.slice(6)}`;
   };
 
-  if (loading) return <p>📊 불러오는 중...</p>;
-  if (!stockData) return <p>❌ 등록된 분석 종목이 아닙니다.</p>;
-  if (!Array.isArray(chartData) || chartData.length === 0) return <p>❌ 차트 데이터가 없습니다.</p>;
+  if (error) return <p>❌ 등록된 분석 종목이 아닙니다.</p>;
 
   return (
     <div style={{ padding: "2rem", maxWidth: "960px", margin: "auto" }}>
-      <h2>{stockData.name} ({stockData.code}) 분석</h2>
-      {version && (
-        <p style={{ fontSize: "0.9rem", color: "#888" }}>
-          분석일: {formatVersionDate(version)}
-        </p>
+      {stockData && (
+        <>
+          <h2>{stockData.name} ({stockData.code}) 분석</h2>
+          {version && (
+            <p style={{ fontSize: "0.9rem", color: "#888" }}>
+              분석일: {formatVersionDate(version)}
+            </p>
+          )}
+        </>
       )}
 
-      <ChartComponent
-        code={shortCode}
-        supportLines={stockData.supportLines}
-        resistanceLines={stockData.resistanceLines}
-        chartData={chartData}
-      />
+      {loading && <p>📊 차트 불러오는 중...</p>}
+
+      {!loading && chartData.length > 0 && stockData && (
+        <ChartComponent
+          code={shortCode}
+          supportLines={stockData.supportLines}
+          resistanceLines={stockData.resistanceLines}
+          chartData={chartData}
+        />
+      )}
 
       {companyInfo && (
         <div style={{ marginTop: "2rem" }}>
@@ -140,16 +133,16 @@ export default function StockDetail() {
       )}
 
       <h3 style={{ marginTop: "2rem" }}>📝 매매 전략</h3>
-      <p>{stockData.strategy || "등록된 전략이 없습니다."}</p>
+      <p>{stockData?.strategy || "등록된 전략이 없습니다."}</p>
 
       <h3 style={{ marginTop: "2rem" }}>🧐 종목 설명</h3>
-      <p>{stockData.detail || "등록된 설명이 없습니다."}</p>
+      <p>{stockData?.detail || "등록된 설명이 없습니다."}</p>
 
       <div style={{ marginTop: "1rem" }}>
-        {stockData.youtubeUrl && (
+        {stockData?.youtubeUrl && (
           <p><a href={stockData.youtubeUrl} target="_blank" rel="noreferrer">▶️ YouTube 보기</a></p>
         )}
-        {stockData.threadsUrl && (
+        {stockData?.threadsUrl && (
           <p><a href={stockData.threadsUrl} target="_blank" rel="noreferrer">💬 Threads 보기</a></p>
         )}
       </div>
