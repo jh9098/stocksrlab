@@ -1,20 +1,21 @@
 import os
 import json
+import shutil
 from crawler import crawl_naver_price
 from datetime import datetime
 
 CRAWLED_DIR = "./frontend/src/data/crawled"
+PUBLIC_DIR = "./frontend/public/data/crawled"
 INDEX_PATH = os.path.join(CRAWLED_DIR, "index.json")
+PUBLIC_INDEX_PATH = os.path.join(PUBLIC_DIR, "index.json")
 
 def load_existing_index():
     if not os.path.exists(INDEX_PATH):
         return {}
-
     with open(INDEX_PATH, "r", encoding="utf-8") as f:
         return json.load(f)
 
 def update_one_stock(code, existing_prices):
-    # A000020 → A000020
     full_code = "A" + code
     latest = crawl_naver_price(full_code, max_pages=5)
 
@@ -32,7 +33,6 @@ def update_one_stock(code, existing_prices):
     return merged
 
 def update_all_crawled():
-    # 기존 index.json 불러오기
     index_data = load_existing_index()
     codes = sorted(index_data.keys())
 
@@ -47,11 +47,17 @@ def update_all_crawled():
         except Exception as e:
             print(f"❌ {code} 에러 발생: {e}")
 
-    # 최종 index.json 저장
+    # 저장: src용
     with open(INDEX_PATH, "w", encoding="utf-8") as f:
         json.dump(index_data, f, ensure_ascii=False, separators=(",", ":"))
 
-    print(f"\n✅ 전체 업데이트 완료! 저장 위치: {INDEX_PATH}")
+    # 저장: Netlify용 public 디렉토리
+    os.makedirs(PUBLIC_DIR, exist_ok=True)
+    shutil.copy(INDEX_PATH, PUBLIC_INDEX_PATH)
+
+    print(f"\n✅ 전체 업데이트 완료!")
+    print(f"📦 저장 위치 (src): {INDEX_PATH}")
+    print(f"🌐 저장 위치 (public): {PUBLIC_INDEX_PATH}")
 
 if __name__ == "__main__":
     update_all_crawled()
