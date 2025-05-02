@@ -4,7 +4,7 @@ import shutil
 from crawler import crawl_naver_price
 from datetime import datetime
 
-CRAWLED_DIR = "./frontend/src/data/crawled"
+CRAWLED_DIR = "./frontend/public/data/crawled"
 PUBLIC_DIR = "./frontend/public/data/crawled"
 INDEX_PATH = os.path.join(CRAWLED_DIR, "index.json")
 PUBLIC_INDEX_PATH = os.path.join(PUBLIC_DIR, "index.json")
