@@ -126,7 +126,7 @@ export default function Home() {
           </Link>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.5rem" }}>
+        <div className="stock-grid" style={{ gap: "1.5rem" }}>
           {stocks.map((stock) => (
             <div key={stock.version} className="stock-card enhanced">
               <div className="stock-card-header" style={{ display: "flex", justifyContent: "space-between" }}>
