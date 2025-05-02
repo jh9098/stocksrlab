@@ -19,28 +19,34 @@ export default function Home() {
         page_title: "Home Page",
       });
     }
-
-    // ✅ 성능 개선: version, name, code, supportLines 등 최소 데이터만 포함한 summary JSON 사용
-    fetch("/data/stocks/index.json")
-      .then((res) => res.json())
-      .then((json) => {
-        const entries = json
-          .filter((d) => d.status === "진행중")
-          .sort((a, b) => b.version.localeCompare(a.version));
-
-        setStocks(entries);
-      })
-      .catch((err) => {
-        console.error("❌ index.json 로딩 실패:", err);
-        setStocks([]);
-      });
   }, []);
-
+  
   useEffect(() => {
-    fetch("/data/market.json")
-      .then((res) => res.json())
-      .then(setMarket)
-      .catch(() => setMarket(null));
+    const loadData = async () => {
+      const modules = import.meta.glob("../data/stocks/*.json");
+      const loadTasks = [];
+  
+      for (const path in modules) {
+        const filename = path.split("/").pop().replace(".json", "");
+        const parts = filename.split("_");
+        if (parts.length !== 3) continue;
+  
+        const [code, date, time] = parts;
+        const version = `${code}_${date}${time}`;
+        const loadPromise = modules[path]().then(mod => {
+          const data = mod.default;
+          if (data.status !== "진행중") return null;
+          return { ...data, version, code: code.replace("A", ""), sortKey: `${date}${time}` };
+        });
+        loadTasks.push(loadPromise);
+      }
+  
+      const results = await Promise.all(loadTasks);
+      const valid = results.filter(Boolean).sort((a, b) => b.sortKey.localeCompare(a.sortKey));
+      setStocks(valid);
+    };
+  
+    loadData();
   }, []);
 
   useEffect(() => {
