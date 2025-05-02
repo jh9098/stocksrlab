@@ -90,6 +90,15 @@ export default function Home() {
       </div>
     );
   };
+  useEffect(() => {
+    fetch("/data/market.json")
+      .then((res) => res.json())
+      .then(setMarket)
+      .catch(() => {
+        console.error("❌ market.json 로딩 실패");
+        setMarket(null);
+      });
+  }, []);
 
   if (location.pathname === "/admin") return null;
 
