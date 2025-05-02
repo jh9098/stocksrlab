@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import { useLocation, Link } from "react-router-dom";
 import LazyYoutube from "../components/LazyYoutube";
 
-const dataModules = import.meta.glob("../data/stocks/*.json");
-
 export default function Home() {
   const [stocks, setStocks] = useState([]);
   const [market, setMarket] = useState(null);
@@ -22,29 +20,20 @@ export default function Home() {
       });
     }
 
-    const loadData = async () => {
-      const entries = [];
+    // ✅ 성능 개선: version, name, code, supportLines 등 최소 데이터만 포함한 summary JSON 사용
+    fetch("/data/stocks/index.json")
+      .then((res) => res.json())
+      .then((json) => {
+        const entries = json
+          .filter((d) => d.status === "진행중")
+          .sort((a, b) => b.version.localeCompare(a.version));
 
-      for (const path in dataModules) {
-        const filename = path.split("/").pop().replace(".json", "");
-        const parts = filename.split("_");
-        if (parts.length !== 3) continue;
-
-        const [code, date, time] = parts;
-        const version = `${code}_${date}_${time}`;
-        const module = await dataModules[path]();
-        const data = module.default;
-
-        if (data.status !== "진행중") continue;
-
-        entries.push({ ...data, version, code: code.replace("A", ""), sortKey: `${date}${time}` });
-      }
-
-      entries.sort((a, b) => b.sortKey.localeCompare(a.sortKey));
-      setStocks(entries);
-    };
-
-    loadData();
+        setStocks(entries);
+      })
+      .catch((err) => {
+        console.error("❌ index.json 로딩 실패:", err);
+        setStocks([]);
+      });
   }, []);
 
   useEffect(() => {
@@ -91,9 +80,9 @@ export default function Home() {
 
   return (
     <div style={{ padding: "1rem", maxWidth: 1200, margin: "auto" }}>
-      {/* 📊 국내 지수 요약 */}
+      {/* 통기 국내 지수 요약 */}
       <section style={{ marginBottom: "2rem" }}>
-        <h2>📊 국내 지수 요약</h2>
+        <h2>통기 국내 지수 요약</h2>
         <div style={{ display: "flex", justifyContent: "start", gap: "2rem" }}>
           {market && (
             <>
@@ -107,7 +96,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 🧪 등록된 종목 전체 */}
+      {/* 등록된 종목 전체 */}
       <section style={{ marginBottom: "2rem" }}>
         <div style={{ textAlign: "right", marginBottom: "1rem" }}>
           <Link
@@ -146,7 +135,7 @@ export default function Home() {
               </div>
               <div className="stock-card-footer">
                 <Link to={`/stock/A${stock.code}?v=${stock.version}`} className="chart-link">
-                  📊 차트 보기
+                  통기 차트 보기
                 </Link>
               </div>
             </div>
@@ -154,9 +143,9 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 🎥 YouTube Shorts */}
+      {/* YouTube Shorts */}
       <section id="shorts-section" style={{ marginBottom: "2rem", marginTop: "4rem" }}>
-        <h2 style={{ marginBottom: "1rem" }}>🎥 YouTube Shorts</h2>
+        <h2 style={{ marginBottom: "1rem" }}>YouTube Shorts</h2>
         {loadShorts && (
           <div style={{ display: "flex", gap: "1rem", overflowX: "auto", paddingBottom: "1rem" }}>
             <LazyYoutube videoId="02rQU7ngEjY" />
