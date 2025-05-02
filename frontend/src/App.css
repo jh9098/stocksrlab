@@ -53,6 +53,12 @@ nav a {
 .dark-mode .index-summary {
   background-color: #333;
 }
+/* 📦 종목 카드 그리드 */
+.stock-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
 
 /* 📦 종목 카드 */
 .stock-card.enhanced {
