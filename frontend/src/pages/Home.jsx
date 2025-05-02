@@ -110,7 +110,10 @@ export default function Home() {
           ⏱️ 기준: {market?.updatedAt || "-"}
         </div>
       </section>
-
+      {/* 최근 등록된 종목 타이틀 */}
+      <section style={{ marginBottom: "1rem" }}>
+        <h2 style={{ fontSize: "1.3rem", marginBottom: "1rem" }}>🧪 최근 등록된 종목들</h2>
+      </section>
       {/* 등록된 종목 전체 */}
       <section style={{ marginBottom: "2rem" }}>
         <div style={{ textAlign: "right", marginBottom: "1rem" }}>
