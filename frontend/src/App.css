@@ -165,29 +165,26 @@ footer {
 @media (max-width: 480px) {
   .stock-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); /* 카드가 더 넓어짐 */
-    gap: 0.8rem; /* 카드 간 간격 줄임 */
-    padding: 0 0.5rem;
+    grid-template-columns: repeat(2, 1fr); /* 한 줄에 2개 */
+    gap: 0.2rem;
+    padding: 0 0.2rem;
   }
 
   .stock-card.enhanced {
-    padding: 0.8rem 1rem;
-    font-size: 0.88rem;
+    padding: 0.8rem;
+    font-size: 0.92rem;
     border-radius: 10px;
   }
 
   .stock-card-header h3 {
-    font-size: 1rem;
+    font-size: 0.95rem;
+    word-break: keep-all;
   }
 
   .stock-card-body p {
     font-size: 0.82rem;
     line-height: 1.4;
-  }
-
-  .stock-card-footer {
-    margin-top: 0.6rem;
-    text-align: center;
+    word-break: keep-all;
   }
 
   .chart-link {
