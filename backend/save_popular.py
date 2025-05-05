@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 import json
 from pathlib import Path
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 def crawl_popular_stocks():
     url = "https://finance.naver.com/sise/lastsearch2.naver"
@@ -44,7 +45,8 @@ if __name__ == "__main__":
     top10_data_list = crawl_popular_stocks()
     
     # ✅ 시간 추가
-    now = datetime.now().strftime("%Y.%m.%d %H시 %M분 기준")
+    now = datetime.now(ZoneInfo("Asia/Seoul"))
+    formatted_time = now.strftime("%Y.%m.%d %H시 %M분 기준")
 
     # ✅ 저장 경로
     output_path = Path(__file__).parent.parent / "frontend/src/data/popular.json"
@@ -52,7 +54,7 @@ if __name__ == "__main__":
     # ✅ 파일 저장
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump({
-            "updatedAt": now,
+            "updatedAt": formatted_time,
             "stocks": top10_data_list
         }, f, indent=2, ensure_ascii=False)
 
