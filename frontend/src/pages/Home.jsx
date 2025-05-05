@@ -3,6 +3,16 @@ import { useLocation, Link } from "react-router-dom";
 import PopularStocksCompact from "../components/PopularStocksCompact";
 
 export default function Home() {
+  const themeLinkStyle = {
+    padding: "0.5rem 0.8rem",
+    backgroundColor: "#f0f0f0",
+    borderRadius: "6px",
+    textDecoration: "none",
+    color: "#333",
+    fontSize: "0.9rem",
+    fontWeight: "bold"
+  };
+
   const [stocks, setStocks] = useState([]);
   const [market, setMarket] = useState(null);
   const [favorites, setFavorites] = useState(() => {
@@ -154,6 +164,19 @@ export default function Home() {
               </div>
             </div>
           ))}
+        </div>
+      </section>
+      {/* ✅ 테마 분석 섹션 링크 추가 */}
+      <section style={{ marginBottom: "2rem" }}>
+        <h2 style={{ fontSize: "1.3rem", marginBottom: "0.5rem" }}>📚 테마별 종목 분석</h2>
+        <p style={{ fontSize: "0.95rem", color: "#555", marginBottom: "1rem" }}>
+          주식 시장의 주요 테마를 중심으로 대장주 종목을 정리했습니다. 에너지, 2차전지, 반도체 등 카테고리별로 확인해보세요.
+        </p>
+        <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+          <Link to="/theme/energy" style={themeLinkStyle}>⚡ 에너지/전력 인프라</Link>
+          //<Link to="/theme/battery" style={themeLinkStyle}>🔋 2차전지</Link>
+          //<Link to="/theme/semicon" style={themeLinkStyle}>💾 반도체</Link>
+          //<Link to="/theme/etc" style={themeLinkStyle}>📌 기타 테마</Link>
         </div>
       </section>
 
