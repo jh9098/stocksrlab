@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { auth } from "../firebaseConfig";
 import { uploadStockJsonToGithub } from "../utils/uploadToGithub";
 import { deleteStockJsonFromGithub } from "../utils/deleteFromGithub";
+import { Helmet } from "react-helmet";
 
 const dataModules = import.meta.glob("../data/stocks/*.json", { eager: true });
 const ADMIN_UID = "4vqkhd7oznd8eP4eqylcHhlh3QY2";
@@ -191,6 +192,9 @@ export default function Admin() {
 
   return (
     <div style={{ padding: "2rem", maxWidth: "1000px", margin: "auto" }}>
+      <Helmet>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       <h2>📈 종목 등록/수정</h2>
 
       <div style={{ marginBottom: "1rem" }}>
