@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation, Link } from "react-router-dom";
-import LazyYoutube from "../components/LazyYoutube";
+import PopularStocksCompact from "../components/PopularStocksCompact";
 
 export default function Home() {
   const [stocks, setStocks] = useState([]);
@@ -9,9 +9,8 @@ export default function Home() {
     const saved = localStorage.getItem("favorites");
     return saved ? JSON.parse(saved) : [];
   });
-  const [loadShorts, setLoadShorts] = useState(false);
   const location = useLocation();
-  // ✅ 1. 광고 스크립트 삽입 useEffect
+
   useEffect(() => {
     const script = document.createElement("script");
     script.async = true;
@@ -19,7 +18,6 @@ export default function Home() {
     document.body.appendChild(script);
   }, []);
 
-  // ✅ 2. 구글 애널리틱스
   useEffect(() => {
     if (window.gtag) {
       window.gtag("event", "page_view", {
@@ -28,18 +26,17 @@ export default function Home() {
       });
     }
   }, []);
-  
-  // ✅ 3. 종목 불러오기  
+
   useEffect(() => {
     const loadData = async () => {
       const modules = import.meta.glob("../data/stocks/*.json");
       const loadTasks = [];
-  
+
       for (const path in modules) {
         const filename = path.split("/").pop().replace(".json", "");
         const parts = filename.split("_");
         if (parts.length !== 3) continue;
-  
+
         const [code, date, time] = parts;
         const version = `${code}_${date}${time}`;
         const loadPromise = modules[path]().then(mod => {
@@ -49,26 +46,13 @@ export default function Home() {
         });
         loadTasks.push(loadPromise);
       }
-  
+
       const results = await Promise.all(loadTasks);
       const valid = results.filter(Boolean).sort((a, b) => b.sortKey.localeCompare(a.sortKey));
       setStocks(valid);
     };
-  
+
     loadData();
-  }, []);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        setLoadShorts(true);
-        observer.disconnect();
-      }
-    }, { threshold: 0.1 });
-
-    const shortsTarget = document.getElementById("shorts-section");
-    if (shortsTarget) observer.observe(shortsTarget);
-    return () => observer.disconnect();
   }, []);
 
   const toggleFavorite = (code) => {
@@ -90,6 +74,7 @@ export default function Home() {
       </div>
     );
   };
+
   useEffect(() => {
     fetch("/data/market.json")
       .then((res) => res.json())
@@ -119,10 +104,12 @@ export default function Home() {
           ⏱️ 기준: {market?.updatedAt || "-"}
         </div>
       </section>
+
       {/* 최근 등록된 종목 타이틀 */}
       <section style={{ marginBottom: "1rem" }}>
         <h2 style={{ fontSize: "1.3rem", marginBottom: "1rem" }}>🧪 최근 등록된 종목들</h2>
       </section>
+
       {/* 등록된 종목 전체 */}
       <section style={{ marginBottom: "2rem" }}>
         <div style={{ textAlign: "right", marginBottom: "1rem" }}>
@@ -170,22 +157,13 @@ export default function Home() {
         </div>
       </section>
 
-      {/* YouTube Shorts */}
-      <section id="shorts-section" style={{ marginBottom: "2rem", marginTop: "4rem" }}>
-        <h2 style={{ marginBottom: "1rem" }}>YouTube Shorts</h2>
-        {loadShorts && (
-          <div style={{ display: "flex", gap: "1rem", overflowX: "auto", paddingBottom: "1rem" }}>
-            <LazyYoutube videoId="02rQU7ngEjY" />
-            <LazyYoutube videoId="14NbzG_9V1Y" />
-            <LazyYoutube videoId="tf6QuIzxDhk" />
-          </div>
-        )}
-      </section>
+      {/* ✅ 인기 검색 종목 섹션 */}
+      <PopularStocksCompact />
 
       {/* 안내 문구 */}
       <footer style={{ fontSize: "0.8rem", color: "#888" }}>
         <hr style={{ margin: "3rem 0 1.5rem" }} />
-        
+
         {/* ✅ 카카오 광고 삽입 영역 */}
         <div style={{ textAlign: "center", marginBottom: "2rem" }}>
           <ins className="kakao_ad_area"
@@ -195,13 +173,12 @@ export default function Home() {
             data-ad-height="250"
           ></ins>
         </div>
-      
+
         <p>※ 지지저항 Lab에서 제공하는 정보는 오류 및 지연이 있을 수 있으며, 이를 기반으로 한 투자에는 손실이 발생할 수 있습니다.</p>
         <p>※ 본 서비스는 비상업적 참고용이며, 투자 자문이나 매매 유도 목적이 아닙니다.</p>
         <p>※ 문의: stocksrlab@naver.com</p>
         <p style={{ marginTop: "1rem" }}>© 지지저항 Lab. All rights reserved.</p>
       </footer>
-
     </div>
   );
 }
