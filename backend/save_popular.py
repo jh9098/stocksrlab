@@ -23,7 +23,7 @@ def crawl_popular_stocks():
             continue
         rank = cols[0].get_text(strip=True)
         name = cols[1].get_text(strip=True)
-        rate = cols[2].get_text(strip=True)
+        rate = cols[5].get_text(strip=True)  # ✅ 등락률
         price = cols[3].get_text(strip=True)
         code = cols[1].find("a")["href"].split("code=")[-1]
 
