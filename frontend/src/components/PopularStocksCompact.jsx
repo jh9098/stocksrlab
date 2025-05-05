@@ -18,9 +18,9 @@ export default function PopularStocksCompact() {
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem 1.25rem" }}>
         {stocks.map((stock) => (
-          <Link
+          <div
             key={stock.code}
-            to={`/chart/${stock.code}`}
+            //to={`/chart/${stock.code}`}
             style={{
               textDecoration: "none",
               color: "#111",
@@ -37,7 +37,7 @@ export default function PopularStocksCompact() {
             onMouseLeave={(e) => e.currentTarget.style.background = "#f9f9f9"}
           >
             {stock.rank}. {stock.name} ({stock.code}) : {stock.price} ({stock.rate})
-          </Link>
+          </div>
         ))}
       </div>
     </section>
