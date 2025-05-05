@@ -33,8 +33,8 @@ export default function PopularStocksCompact() {
               lineHeight: 1.4,
               transition: "background 0.2s",
             }}
-            onMouseEnter={(e) => e.currentTarget.style.background = "#f0f0f0"}
-            onMouseLeave={(e) => e.currentTarget.style.background = "#f9f9f9"}
+            //onMouseEnter={(e) => e.currentTarget.style.background = "#f0f0f0"}
+            //onMouseLeave={(e) => e.currentTarget.style.background = "#f9f9f9"}
           >
             {stock.rank}. {stock.name} ({stock.code}) : {stock.price} ({stock.rate})
           </div>
