@@ -4,6 +4,7 @@ import NavBar from "./components/NavBar";
 import NotFound from "./pages/NotFound";
 import ThemeEnergy from "./pages/ThemeEnergy";
 import ThemeForex from "./pages/ThemeForex";
+import ThemeBci from "./pages/ThemeBci";
 
 import './App.css';
 
@@ -44,6 +45,7 @@ export default function App() {
           <Route path="*" element={<NotFound />} />
           <Route path="/theme/energy" element={<ThemeEnergy />} />
           <Route path="/theme/forex" element={<ThemeForex />} />
+          <Route path="/theme/bci" element={<ThemeBci />} />
         </Routes>
       </Suspense>
     </BrowserRouter>
