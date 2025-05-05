@@ -170,7 +170,7 @@ export default function Home() {
       <section style={{ marginBottom: "2rem" }}>
         <h2 style={{ fontSize: "1.3rem", marginBottom: "0.5rem" }}>📚 테마별 종목 분석</h2>
         <p style={{ fontSize: "0.95rem", color: "#555", marginBottom: "1rem" }}>
-          주식 시장의 주요 테마를 중심으로 대장주 종목을 정리했습니다. 에너지, 2차전지, 반도체 등 카테고리별로 확인해보세요.
+          주식 시장의 주요 테마를 중심으로 대장주 종목을 정리했습니다. 테마별로 선정해서 계속 업데이트 하고 확장될 예정입니다.
         </p>
         <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
           <Link to="/theme/energy" style={themeLinkStyle}>⚡ 에너지/전력 인프라</Link>
