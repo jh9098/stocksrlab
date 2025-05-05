@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import NavBar from "./components/NavBar";
 import NotFound from "./pages/NotFound";
+import ThemeEnergy from "./pages/ThemeEnergy";
 
 import './App.css';
 
@@ -40,6 +41,7 @@ export default function App() {
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="*" element={<NotFound />} />
+          <Route path="/theme/energy" element={<ThemeEnergy />} />
         </Routes>
       </Suspense>
     </BrowserRouter>
