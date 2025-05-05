@@ -11,25 +11,35 @@ export default function PopularStocksCompact() {
   }, []);
 
   return (
-    <div className="mt-8 p-4 border rounded-xl bg-white shadow-sm">
-      <h2 className="text-xl font-bold mb-4">🔥 인기 검색 종목 Top 10</h2>
-      <div className="grid grid-cols-2 gap-y-4 gap-x-4 text-sm">
+    <section style={{ marginTop: "4rem", marginBottom: "2rem" }}>
+      <h2 style={{ fontSize: "1.3rem", marginBottom: "1.5rem", fontWeight: "bold" }}>
+        🔥 인기 검색 종목 Top 10
+      </h2>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem 1.25rem" }}>
         {stocks.map((stock) => (
           <Link
-            to={`/chart/${stock.code}`}
             key={stock.code}
-            className="border rounded-lg p-2 hover:bg-gray-50"
+            to={`/chart/${stock.code}`}
+            style={{
+              textDecoration: "none",
+              color: "#111",
+              background: "#f9f9f9",
+              borderRadius: "0.75rem",
+              padding: "0.75rem",
+              boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
+              fontSize: "0.95rem",
+              fontWeight: 500,
+              lineHeight: 1.4,
+              transition: "background 0.2s",
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.background = "#f0f0f0"}
+            onMouseLeave={(e) => e.currentTarget.style.background = "#f9f9f9"}
           >
-            <div className="font-semibold">
-              {stock.rank}. {stock.name}
-            </div>
-            <div className="text-gray-600 text-xs">
-              종목코드: {stock.code}
-            </div>
-            <div className="text-blue-600 font-bold">{stock.price}원</div>
+            {stock.rank}. {stock.name} ({stock.code}) : {stock.price} ({stock.rate})
           </Link>
         ))}
       </div>
-    </div>
+    </section>
   );
 }
