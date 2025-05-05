@@ -36,7 +36,9 @@ export default function NavBar() {
 
   const mainLinks = [
     { to: "/list", label: "📈 종목리스트" },
-    { to: "/request", label: "🗳️ 요청게시판" },
+    { to: "/request", label: "🗳️ 요청게시판" }
+ // { to: "/admin", label: "➕ 분석등록" }, // ✅ 주석처리 또는 제거
+
   ];
 
   const subLinks = [
