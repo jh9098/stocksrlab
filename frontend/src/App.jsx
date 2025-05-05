@@ -3,6 +3,7 @@ import { lazy, Suspense } from "react";
 import NavBar from "./components/NavBar";
 import NotFound from "./pages/NotFound";
 import ThemeEnergy from "./pages/ThemeEnergy";
+import ThemeForex from "./pages/ThemeForex";
 
 import './App.css';
 
@@ -42,6 +43,7 @@ export default function App() {
           <Route path="/terms" element={<Terms />} />
           <Route path="*" element={<NotFound />} />
           <Route path="/theme/energy" element={<ThemeEnergy />} />
+          <Route path="/theme/forex" element={<ThemeForex />} />
         </Routes>
       </Suspense>
     </BrowserRouter>
