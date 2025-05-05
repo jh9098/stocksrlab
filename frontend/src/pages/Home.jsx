@@ -175,6 +175,7 @@ export default function Home() {
         <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
           <Link to="/theme/energy" style={themeLinkStyle}>⚡ 에너지/전력 인프라</Link>
           <Link to="/theme/forex" style={themeLinkStyle}>💱 원화 강세 수혜주</Link>
+          <Link to="/theme/bci" style={themeLinkStyle}>🧠 BCI·뇌 인터페이스</Link>
           {/*
             <Link to="/theme/battery" style={themeLinkStyle}>🔋 2차전지</Link>
             <Link to="/theme/semicon" style={themeLinkStyle}>💾 반도체</Link>
