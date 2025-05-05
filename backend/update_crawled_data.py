@@ -51,10 +51,6 @@ def update_all_crawled():
     with open(INDEX_PATH, "w", encoding="utf-8") as f:
         json.dump(index_data, f, ensure_ascii=False, separators=(",", ":"))
 
-    # 저장: Netlify용 public 디렉토리
-    os.makedirs(PUBLIC_DIR, exist_ok=True)
-    shutil.copy(INDEX_PATH, PUBLIC_INDEX_PATH)
-
     print(f"\n✅ 전체 업데이트 완료!")
     print(f"📦 저장 위치 (src): {INDEX_PATH}")
     print(f"🌐 저장 위치 (public): {PUBLIC_INDEX_PATH}")
