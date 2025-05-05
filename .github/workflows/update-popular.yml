@@ -1,0 +1,35 @@
+name: Update Popular Stocks
+
+on:
+  schedule:
+    - cron: '0 1 * * 1-5'   # 오전 10시 KST (UTC+9 → UTC 1시)
+    - cron: '0 5 * * 1-5'   # 오후 2시 KST (UTC 5시)
+    - cron: '0 8 * * 1-5'   # 오후 5시 KST (UTC 8시)
+  workflow_dispatch:       # 수동 실행도 가능
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install beautifulsoup4 requests
+
+      - name: Run save_popular.py
+        run: python backend/save_popular.py
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add frontend/src/data/popular.json
+          git commit -m "Update popular.json (auto)" || echo "No changes"
+          git push
