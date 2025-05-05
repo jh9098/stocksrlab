@@ -14,7 +14,7 @@ export default function PopularStocksCompact() {
   return (
     <section style={{ marginTop: "4rem", marginBottom: "2rem" }}>
       <h2 style={{ fontSize: "1.3rem", marginBottom: "1rem", fontWeight: "bold" }}>
-        🔥 {updatedAt} 인기 검색 종목 Top 10
+        🔥 인기종목 Top 10       {updatedAt}
       </h2>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem 1.25rem" }}>
