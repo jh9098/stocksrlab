@@ -6,6 +6,7 @@ import { auth } from "../firebaseConfig";
 import { uploadStockJsonToGithub } from "../utils/uploadToGithub";
 import { deleteStockJsonFromGithub } from "../utils/deleteFromGithub";
 import { Helmet } from "react-helmet";
+import { appendStockToIndexJson } from "../utils/appendToIndex"; // 상단에 추가
 
 const dataModules = import.meta.glob("../data/stocks/*.json", { eager: true });
 const ADMIN_UID = "4vqkhd7oznd8eP4eqylcHhlh3QY2";
@@ -104,6 +105,8 @@ export default function Admin() {
       setStatus("🚀 업로드 중...");
       try {
         await uploadStockJsonToGithub(payload, version);
+        await appendStockToIndexJson(payload.code);
+
         window.location.reload();
       } catch (err) {
         console.error(err);
