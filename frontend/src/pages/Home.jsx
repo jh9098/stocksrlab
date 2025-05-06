@@ -107,6 +107,8 @@ export default function Home() {
             <>
               {formatIndex("KOSPI", market["KOSPI"])}
               {formatIndex("KOSDAQ", market["KOSDAQ"])}
+              {formatIndex("NASDAQ", market["NASDAQ"])}
+              {formatIndex("S&P500", market["S&P500"])}
             </>
           )}
         </div>
