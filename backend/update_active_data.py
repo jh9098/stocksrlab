@@ -1,55 +1,49 @@
 import os
 import json
+import shutil
 from datetime import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 from utils.naver_crawler import fetch_stock_price
 from utils.investing_crawler import fetch_index_full
-import shutil
-from zoneinfo import ZoneInfo
 
-STOCKS_INDEX_PATH = Path("frontend/src/data/stocks/index.json")
+STOCKS_DIR = Path("frontend/src/data/stocks")
 MARKET_PATH = Path("frontend/src/data/market.json")
 PUBLIC_MARKET_PATH = Path("frontend/public/data/market.json")
 
-def load_index_data():
-    if not STOCKS_INDEX_PATH.exists():
-        print("❌ index.json 없음")
-        return {}
-    with open(STOCKS_INDEX_PATH, "r", encoding="utf-8") as f:
-        return json.load(f)
-
-def save_index_data(data):
-    with open(STOCKS_INDEX_PATH, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
-
 def update_stock_prices():
     print("📈 진행중 종목 주가 업데이트 시작...")
-    data = load_index_data()
+    json_files = list(STOCKS_DIR.glob("*.json"))
     count = 0
 
-    for key, value in data.items():
-        if value.get("status") != "진행중":
-            continue
-
+    for file in json_files:
         try:
-            price_info = fetch_stock_price(value["code"])
-            if not price_info:
-                print(f"⚠️ {value['code']} 시세 실패 (skip)")
+            with open(file, "r", encoding="utf-8") as f:
+                data = json.load(f)
+
+            if data.get("status") != "진행중":
                 continue
 
-            value["latestPrice"] = {
+            price_info = fetch_stock_price(data["code"])
+            if not price_info:
+                print(f"⚠️ {data['code']} 시세 실패 (skip)")
+                continue
+
+            data["latestPrice"] = {
                 "price": price_info["price"],
                 "change": price_info["change"],
-                "date": datetime.now().strftime("%Y-%m-%d %H:%M")
+                "date": datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y-%m-%d %H:%M")
             }
-            data[key] = value
-            print(f"✅ {value['code']} ({key}) 업데이트 완료")
+
+            with open(file, "w", encoding="utf-8") as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+
+            print(f"✅ {data['code']} ({file.name}) 업데이트 완료")
             count += 1
 
         except Exception as e:
-            print(f"❌ {key} 오류: {e}")
+            print(f"❌ {file.name} 오류: {e}")
 
-    save_index_data(data)
     print(f"\n📦 총 {count}개 종목 최신가 반영 완료")
 
 def update_market_json():
@@ -77,7 +71,6 @@ def update_market_json():
     except Exception as e:
         print(f"❌ market.json 저장 실패: {e}")
         
-    # market.json → public/data로 복사
     try:
         os.makedirs(PUBLIC_MARKET_PATH.parent, exist_ok=True)
         shutil.copy(MARKET_PATH, PUBLIC_MARKET_PATH)
