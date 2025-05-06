@@ -5,10 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>지지저항 Lab</title>
 
-    <!-- ✅ Google AdSense -->
+    <!-- ✅ [1] AdSense 사이트 소유권 확인용 -->
     <meta name="google-adsense-account" content="ca-pub-1861160469675223" />
 
-    <!-- ✅ Preconnect for external resources (Lighthouse 권장) -->
+    <!-- ✅ [2] AdSense 승인 심사용 광고 JS 삽입 (필수) -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1861160469675223"
+            crossorigin="anonymous"></script>
+
+    <!-- ✅ Preconnect for 외부 자원 최적화 -->
     <link rel="preconnect" href="https://tradingview-widget.com" />
     <link rel="preconnect" href="https://firebaseapp.com" />
     <link rel="preconnect" href="https://apis.google.com" />
@@ -22,7 +26,7 @@
       gtag('config', 'G-BNBT0SJ4B2');
     </script>
 
-    <!-- ✅ Main JS Entry -->
+    <!-- ✅ Vite 진입점 -->
     <script type="module" src="/src/main.jsx"></script>
   </head>
   <body>
