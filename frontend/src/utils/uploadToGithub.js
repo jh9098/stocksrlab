@@ -32,19 +32,25 @@ export async function uploadStockJsonToGithub(
     const res = await fetch(url, {
       headers: { Authorization: `token ${token}` },
     });
-    if (res.ok) {
+  
+    if (res.status === 404) {
+      console.log("🆕 신규 파일로 간주: ", filename);
+    } else if (res.ok) {
       const existing = await res.json();
       sha = existing.sha;
-
-      // ✅ 변경 감지: 내용이 같으면 커밋 생략
+  
       const existingDecoded = atob(existing.content);
       if (existingDecoded.trim() === content.trim()) {
         console.log(`⏩ 변경 없음: ${filename}`);
         return;
       }
+    } else {
+      const errText = await res.text();
+      console.warn("📛 SHA 조회 실패 응답:", errText);
+      throw new Error(`GitHub 응답 오류: ${res.status}`);
     }
   } catch (e) {
-    console.warn("기존 SHA 조회 실패 (신규 파일일 수 있음):", e.message);
+    console.warn("⚠️ SHA 조회 중 예외 발생:", e.message);
   }
 
   const payload = {
