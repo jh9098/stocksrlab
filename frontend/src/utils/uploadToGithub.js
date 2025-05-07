@@ -1,7 +1,7 @@
 // uploadToGithub.js: 변경 감지 + 업로드 최적화 버전
 
 export async function uploadStockJsonToGithub(
-  { code, name, strategy,detail, supportLines, resistanceLines, youtubeUrl, threadsUrl, status },
+  { code, name, strategy, detail, supportLines, resistanceLines, youtubeUrl, threadsUrl, status },
   version
 ) {
   const token = import.meta.env.VITE_GITHUB_TOKEN;
@@ -21,25 +21,26 @@ export async function uploadStockJsonToGithub(
     resistanceLines,
     youtubeUrl,
     threadsUrl,
-    status, // ✅ 중요!
+    status,
   };
 
   const content = JSON.stringify(json, null, 2);
   const encodedContent = btoa(unescape(encodeURIComponent(content)));
 
   let sha = null;
+
   try {
     const res = await fetch(url, {
       headers: { Authorization: `token ${token}` },
     });
-  
+
     if (res.status === 404) {
-      console.log("🆕 신규 파일로 간주: ", filename);
+      console.log("🆕 신규 파일로 간주:", filename);
     } else if (res.ok) {
       const existing = await res.json();
       sha = existing.sha;
-  
-      const existingDecoded = atob(existing.content);
+
+      const existingDecoded = decodeURIComponent(escape(atob(existing.content)));
       if (existingDecoded.trim() === content.trim()) {
         console.log(`⏩ 변경 없음: ${filename}`);
         return;
@@ -47,7 +48,7 @@ export async function uploadStockJsonToGithub(
     } else {
       const errText = await res.text();
       console.warn("📛 SHA 조회 실패 응답:", errText);
-      throw new Error(`GitHub 응답 오류: ${res.status}`);
+      throw new Error(`GitHub SHA 조회 실패 (${res.status}): ${res.statusText}`);
     }
   } catch (e) {
     console.warn("⚠️ SHA 조회 중 예외 발생:", e.message);
@@ -70,9 +71,10 @@ export async function uploadStockJsonToGithub(
   });
 
   if (!response.ok) {
-    const err = await response.json();
-    throw new Error("GitHub 업로드 실패: " + err.message);
+    const errText = await response.text();
+    throw new Error(`GitHub 업로드 실패 (${response.status}): ${errText}`);
   }
 
+  console.log("✅ 업로드 성공:", filename);
   return await response.json();
 }
