@@ -1,17 +1,18 @@
-// 통합 index.json 관리 업로드 버전
+// uploadToGithub.js: 변경 감지 + 업로드 최적화 버전
+
 export async function uploadStockJsonToGithub(
-  { code, name, strategy, detail, supportLines, resistanceLines, youtubeUrl, threadsUrl, status },
+  { code, name, strategy,detail, supportLines, resistanceLines, youtubeUrl, threadsUrl, status },
   version
 ) {
   const token = import.meta.env.VITE_GITHUB_TOKEN;
   if (!token) throw new Error("GitHub 토큰이 설정되지 않았습니다");
 
   const shortCode = code.replace("A", "");
-  const key = version ? `${shortCode}_${version.split("_")[1]}_${version.split("_")[2]}` : shortCode;
-  const path = `frontend/src/data/stocks/index.json`;
+  const filename = version ? `${version}.json` : `${shortCode}.json`;
+  const path = `frontend/src/data/stocks/${filename}`;
   const url = `https://api.github.com/repos/jh9098/stocksrlab/contents/${path}`;
 
-  const newEntry = {
+  const json = {
     code,
     name,
     strategy,
@@ -20,12 +21,13 @@ export async function uploadStockJsonToGithub(
     resistanceLines,
     youtubeUrl,
     threadsUrl,
-    status,
+    status, // ✅ 중요!
   };
 
-  // ✅ 기존 index.json 가져오기
+  const content = JSON.stringify(json, null, 2);
+  const encodedContent = btoa(unescape(encodeURIComponent(content)));
+
   let sha = null;
-  let indexJson = {};
   try {
     const res = await fetch(url, {
       headers: { Authorization: `token ${token}` },
@@ -33,23 +35,17 @@ export async function uploadStockJsonToGithub(
     if (res.ok) {
       const existing = await res.json();
       sha = existing.sha;
-      const decoded = atob(existing.content);
-      indexJson = JSON.parse(decoded);
 
-      const existingEntry = indexJson[key];
-      if (existingEntry && JSON.stringify(existingEntry) === JSON.stringify(newEntry)) {
-        console.log(`⏩ 변경 없음: ${key}`);
+      // ✅ 변경 감지: 내용이 같으면 커밋 생략
+      const existingDecoded = atob(existing.content);
+      if (existingDecoded.trim() === content.trim()) {
+        console.log(`⏩ 변경 없음: ${filename}`);
         return;
       }
     }
   } catch (e) {
-    console.warn("⚠️ index.json 초기 로딩 실패 (신규일 수 있음):", e.message);
+    console.warn("기존 SHA 조회 실패 (신규 파일일 수 있음):", e.message);
   }
-
-  // ✅ 업데이트 적용
-  indexJson[key] = newEntry;
-  const newContent = JSON.stringify(indexJson, null, 2);
-  const encodedContent = btoa(unescape(encodeURIComponent(newContent)));
 
   const payload = {
     message: `분석 등록: ${name} (${code})`,
