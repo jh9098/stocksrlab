@@ -8,12 +8,26 @@
   NODE_VERSION = "18"
   NPM_FLAGS = "--prefer-offline --no-audit"
 
+# ✅ JSON 캐시 방지
+[[headers]]
+  for = "/data/stocks/*.json"
+  [headers.values]
+    Cache-Control = "no-store"
+
+# ✅ sitemap.xml을 SPA 라우팅 예외로 분리
+[[redirects]]
+  from = "/sitemap.xml"
+  to = "/sitemap.xml"
+  status = 200
+
+# ✅ SPA 라우팅 기본 설정 (이건 마지막에 둬야 우선순위 문제 없음)
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
 
+# ✅ sitemap.xml MIME 타입 명시 (application/xml)
 [[headers]]
-  for = "/data/stocks/*.json"
+  for = "/sitemap.xml"
   [headers.values]
-    Cache-Control = "no-store"
+    Content-Type = "application/xml"
