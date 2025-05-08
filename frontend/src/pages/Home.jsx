@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation, Link } from "react-router-dom";
 import PopularStocksCompact from "../components/PopularStocksCompact";
+import { Helmet } from "react-helmet";
 
 export default function Home() {
   const themeLinkStyle = {
@@ -99,6 +100,11 @@ export default function Home() {
 
   return (
     <div style={{ padding: "1rem", maxWidth: 1200, margin: "auto" }}>
+      <Helmet>
+        <title>지지저항 Lab - 주식 종목 분석</title>
+        <meta name="description" content="기술적 분석 기반 종목 추천 및 테마 분석 제공" />
+        <meta name="naver-site-verification" content="7baa2a8e2ba0fc1d05498252b674157c5a128911" />
+      </Helmet>      
       {/* 국내 지수 요약 */}
       <section style={{ marginBottom: "2rem" }}>
         <h2> 국내 지수 요약</h2>
