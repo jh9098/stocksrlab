@@ -1,3 +1,5 @@
-# public/robots.txt
 User-agent: *
 Disallow: /admin
+Allow: /
+
+Sitemap: https://stocksrlab.netlify.app/sitemap.xml
