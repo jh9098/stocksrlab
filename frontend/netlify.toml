@@ -14,20 +14,20 @@
   [headers.values]
     Cache-Control = "no-store"
 
-# ✅ sitemap.xml을 SPA 라우팅 예외로 분리
+# ✅ sitemap.xml 예외 먼저 설정
 [[redirects]]
   from = "/sitemap.xml"
   to = "/sitemap.xml"
   status = 200
 
-# ✅ SPA 라우팅 기본 설정 (이건 마지막에 둬야 우선순위 문제 없음)
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-
-# ✅ sitemap.xml MIME 타입 명시 (application/xml)
+# ✅ MIME 타입 명시 (명확하게 XML로 인식되게)
 [[headers]]
   for = "/sitemap.xml"
   [headers.values]
     Content-Type = "application/xml"
+
+# ✅ 그 후 모든 SPA 리디렉션은 맨 아래
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
