@@ -25,6 +25,7 @@
   for = "/sitemap.xml"
   [headers.values]
     Content-Type = "application/xml"
+    Cache-Control = "no-store, no-cache, must-revalidate"
 
 # ✅ 그 후 모든 SPA 리디렉션은 맨 아래
 [[redirects]]
