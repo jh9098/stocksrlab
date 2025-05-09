@@ -1,28 +1,27 @@
-// frontend/vite.config.js
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import { viteStaticCopy } from 'vite-plugin-static-copy'
-import path from 'path'
+// vite.config.js
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import compression from 'vite-plugin-compression'; // Gzip/Brotli 압축
 
 export default defineConfig({
-  root: '.', // frontend 디렉토리 기준
-  build: {
-    outDir: 'dist',
-    emptyOutDir: true
-  },
   plugins: [
     react(),
-    viteStaticCopy({
-      targets: [
-        {
-          src: path.resolve(__dirname, 'public/sitemap.xml'),
-          dest: '.' // => dist/sitemap.xml
-        },
-        {
-          src: path.resolve(__dirname, 'public/robots.txt'),
-          dest: '.' // => dist/robots.txt
+    compression({ algorithm: 'brotliCompress', ext: '.br' }) // .gz도 자동 생성됨
+  ],
+  envPrefix: 'VITE_',
+  build: {
+    outDir: 'dist',
+    sourcemap: false,
+    minify: 'esbuild',
+    assetsInlineLimit: 4096,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            return 'vendor';
+          }
         }
-      ]
-    })
-  ]
-})
+      }
+    }
+  }
+});
