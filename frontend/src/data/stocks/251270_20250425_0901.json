@@ -1,5 +1,5 @@
 {
-  "code": "A251270",
+  "code": "251270",
   "name": "넷마블",
   "strategy": "장기보유자 대응",
   "detail": "추천종목 X / 장기적으로 물리신 분들은 5만원대 진입시 일부 손절 추천",
@@ -11,10 +11,5 @@
   ],
   "youtubeUrl": "",
   "threadsUrl": "",
-  "status": "진행중",
-  "latestPrice": {
-    "price": 50500,
-    "change": 1.94,
-    "date": "2025-05-12 16:23"
-  }
+  "status": "완료"
 }
