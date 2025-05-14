@@ -1,23 +1,19 @@
 {
-  "S&P500": {
-    "price": 5886.55,
-    "change": 42.36,
-    "percent": 0.72
-  },
+  "S&P500": null,
   "NASDAQ": {
     "price": 21197.7,
     "change": 329.55,
     "percent": 1.58
   },
   "KOSPI": {
-    "price": 2625.26,
-    "change": 16.84,
-    "percent": 0.65
+    "price": 2644.56,
+    "change": 36.14,
+    "percent": 1.39
   },
   "KOSDAQ": {
-    "price": 732.0,
-    "change": 0.12,
-    "percent": 0.02
+    "price": 734.6,
+    "change": 2.72,
+    "percent": 0.37
   },
-  "updatedAt": "2025-05-14 10:52"
+  "updatedAt": "2025-05-14 12:12"
 }
