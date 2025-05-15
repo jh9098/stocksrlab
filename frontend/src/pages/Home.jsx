@@ -22,6 +22,12 @@ export default function Home() {
   });
   const location = useLocation();
   useEffect(() => {
+    if (location.pathname === "/" && performance.navigation.type !== 1) {
+      window.location.reload();
+    }
+  }, [location.pathname]);
+
+  useEffect(() => {
     if (document.getElementById("coupang-script")) return;
   
     const script = document.createElement("script");
