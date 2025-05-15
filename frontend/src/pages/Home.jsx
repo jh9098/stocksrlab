@@ -21,6 +21,27 @@ export default function Home() {
     return saved ? JSON.parse(saved) : [];
   });
   const location = useLocation();
+  useEffect(() => {
+    if (document.getElementById("coupang-script")) return;
+  
+    const script = document.createElement("script");
+    script.id = "coupang-script";
+    script.src = "https://ads-partners.coupang.com/g.js";
+    script.async = true;
+    script.onload = () => {
+      if (window.PartnersCoupang) {
+        new window.PartnersCoupang.G({
+          id: 864271,
+          trackingCode: "AF5962904",
+          subId: null,
+          template: "carousel",
+          width: "680",
+          height: "140",
+        });
+      }
+    };
+    document.getElementById("coupang-ad-banner")?.appendChild(script);
+  }, []);
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -194,6 +215,12 @@ export default function Home() {
 
       {/* ✅ 인기 검색 종목 섹션 */}
       <PopularStocksCompact />
+      {/* ✅ 쿠팡 광고 배너 삽입 */}
+      <div style={{ textAlign: "center", marginBottom: "2rem" }}>
+        <p style={{ fontSize: "0.85rem", color: "#777" }}>🛍️ 제휴 마케팅 광고</p>
+        <div id="coupang-ad-banner" />
+      </div>
+
 
       {/* 안내 문구 */}
       <footer style={{ fontSize: "0.8rem", color: "#888" }}>
