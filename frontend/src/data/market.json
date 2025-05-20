@@ -10,14 +10,14 @@
     "percent": 0.09
   },
   "KOSPI": {
-    "price": 2609.66,
-    "change": 6.24,
-    "percent": 0.24
+    "price": 2604.48,
+    "change": 1.06,
+    "percent": 0.04
   },
   "KOSDAQ": {
-    "price": 717.89,
-    "change": 4.14,
-    "percent": 0.58
+    "price": 717.19,
+    "change": 3.44,
+    "percent": 0.48
   },
-  "updatedAt": "2025-05-20 12:14"
+  "updatedAt": "2025-05-20 13:27"
 }
