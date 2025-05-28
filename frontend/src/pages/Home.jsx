@@ -44,9 +44,27 @@ export default function Home() {
           width: "680",
           height: "140",
         });
+        return;
       }
-    };
-    document.getElementById("coupang-ad-banner")?.appendChild(script);
+      if (!document.getElementById("coupang-script")) {
+      const script = document.createElement("script");
+      script.id = "coupang-script";
+      script.src = "https://ads-partners.coupang.com/g.js";
+      script.async = true;
+      script.onload = () => {
+        if (window.PartnersCoupang) {
+          new window.PartnersCoupang.G({
+            id: 864271,
+            trackingCode: "AF5962904",
+            subId: null,
+            template: "carousel",
+            width: "680",
+            height: "140",
+          });
+        }
+      };
+      document.body.appendChild(script); // ✅ 반드시 body에 추가
+    }
   }, []);
 
   useEffect(() => {
