@@ -132,7 +132,7 @@ export default function Home() {
         <meta name="description" content="기술적 분석 기반 종목 추천 및 테마 분석 제공" />
         <meta name="naver-site-verification" content="7baa2a8e2ba0fc1d05498252b674157c5a128911" />
       </Helmet>      
-      {/* ✅ 쿠팡 광고 배너 삽입 */}
+      {/* ✅ 쿠팡 광고 배너 (지수 요약 위) */}
       <div style={{ textAlign: "center", marginBottom: "2rem" }}>
         <p style={{ fontSize: "0.85rem", color: "#777" }}>🛍️ 제휴 마케팅 광고</p>
         <div id="coupang-ad-banner" />
@@ -226,8 +226,6 @@ export default function Home() {
 
       {/* ✅ 인기 검색 종목 섹션 */}
       <PopularStocksCompact />
-
-
 
       {/* 안내 문구 */}
       <footer style={{ fontSize: "0.8rem", color: "#888" }}>
