@@ -26,27 +26,22 @@ export default function Home() {
       window.location.reload();
     }
   }, [location.pathname]);
-
   useEffect(() => {
-    if (document.getElementById("coupang-script")) return;
+    // 이미 PartnersCoupang 객체가 있다면 바로 실행만
+    if (window.PartnersCoupang) {
+      new window.PartnersCoupang.G({
+        id: 864271,
+        trackingCode: "AF5962904",
+        subId: null,
+        template: "carousel",
+        width: "680",
+        height: "140",
+      });
+      return;
+    }
   
-    const script = document.createElement("script");
-    script.id = "coupang-script";
-    script.src = "https://ads-partners.coupang.com/g.js";
-    script.async = true;
-    script.onload = () => {
-      if (window.PartnersCoupang) {
-        new window.PartnersCoupang.G({
-          id: 864271,
-          trackingCode: "AF5962904",
-          subId: null,
-          template: "carousel",
-          width: "680",
-          height: "140",
-        });
-        return;
-      }
-      if (!document.getElementById("coupang-script")) {
+    // 스크립트가 아직 없으면 body에 추가
+    if (!document.getElementById("coupang-script")) {
       const script = document.createElement("script");
       script.id = "coupang-script";
       script.src = "https://ads-partners.coupang.com/g.js";
@@ -63,7 +58,7 @@ export default function Home() {
           });
         }
       };
-      document.body.appendChild(script); // ✅ 반드시 body에 추가
+      document.body.appendChild(script);
     }
   }, []);
 
