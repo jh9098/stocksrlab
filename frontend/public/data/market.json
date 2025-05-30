@@ -4,20 +4,16 @@
     "change": 23.62,
     "percent": 0.4
   },
-  "NASDAQ": {
-    "price": 21363.95,
-    "change": 45.78,
-    "percent": 0.21
-  },
+  "NASDAQ": null,
   "KOSPI": {
-    "price": 2695.89,
-    "change": -24.75,
-    "percent": -0.91
+    "price": 2693.38,
+    "change": -27.26,
+    "percent": -1.0
   },
   "KOSDAQ": {
-    "price": 733.66,
-    "change": -2.63,
-    "percent": -0.36
+    "price": 732.84,
+    "change": -3.45,
+    "percent": -0.47
   },
-  "updatedAt": "2025-05-30 13:29"
+  "updatedAt": "2025-05-30 14:22"
 }
